@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "960393036210",
+    "project_id": "lingual-ai-79735",
+    "storage_bucket": "lingual-ai-79735.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:960393036210:android:94e42957b0f0e02d60e4ab",
+        "android_client_info": {
+          "package_name": "com.linguaai.lingua_ai"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "960393036210-sog7ieh5uss3oj1i3ponhiddr1ejk8dn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.linguaai.lingua_ai",
+            "certificate_hash": "8d8bfd28fa5717dda9b77a96b6842a6fd25f0364"
+          }
+        },
+        {
+          "client_id": "960393036210-a66svqibar5a4p1nn0vhm8k982oomh1b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCjZBK63vN61I7BWn4ADcgRFdX5sdVL7OY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "960393036210-a66svqibar5a4p1nn0vhm8k982oomh1b.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

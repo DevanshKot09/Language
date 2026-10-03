@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "name": "LINGUA AI Clinical & Safety Boundary Specification",
+  "version": "1.0.0",
+  "description": "Enforces non-diagnostic terminology, medical safety boundaries, and clear human-escalation pathways",
+  "mandatoryPrinciples": [
+    "LINGUA AI is an evidence-informed educational and practice support platform.",
+    "LINGUA AI does not provide medical diagnosis, clinical evaluation, or replace speech-language pathologists, psychologists, or physicians.",
+    "Screening features are strictly designated as 'Screening Support' to identify practice priorities, not diagnostic classifications.",
+    "Developmental Language Disorder (DLD) and Dyslexia are distinct conditions and must never be combined into a single unified deficit score.",
+    "ASR / speech recognition confidence shall never be converted into a speech sound or language disorder diagnosis."
+  ],
+  "terminologyRules": {
+    "prohibitedTerms": [
+      "Diagnose DLD",
+      "Diagnose Dyslexia",
+      "AI Diagnosis",
+      "Medical Treatment",
+      "Clinical Diagnosis Result",
+      "Language Disorder Severity Index",
+      "Dyslexia Cure",
+      "Brain Training Cure",
+      "Clinical Deficit Rating",
+      "Failed Assessment"
+    ],
+    "approvedReplacements": {
+      "Diagnose DLD": "Spoken Language Skill Profile & Screening Support",
+      "Diagnose Dyslexia": "Literacy & Reading Skill Profile & Screening Support",
+      "AI Diagnosis": "Guided Practice & Progress Monitoring",
+      "Medical Treatment": "Educational Practice & Skill Development",
+      "Clinical Diagnosis Result": "Screening Support Indicators (Informational)",
+      "Language Disorder Severity Index": "Current Skill Mastery & Independence Estimate",
+      "Failed Assessment": "Practice Opportunity • Let's Review Together"
+    }
+  },
+  "requiredDisclaimers": {
+    "screeningBanner": "LINGUA AI Screening Support is an informational tool designed to highlight skill strengths and practice targets. It does not replace a comprehensive evaluation by a licensed Speech-Language Pathologist or qualified clinician.",
+    "speechRecognitionNotice": "Speech evaluation is provided solely to assist interactive practice. Pronunciation feedback is dependent on acoustic environment and microphone quality and should not be used as a diagnostic measure.",
+    "aiAssistanceNotice": "AI-generated hints and practice sentences follow strict educational guidelines and curriculum maps. They are reviewed for safety and age-appropriateness."
+  }
+}

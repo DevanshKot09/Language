@@ -1,0 +1,196 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "name": "LINGUA AI Design Tokens",
+  "version": "1.0.0",
+  "description": "Evidence-informed, age-adaptive, accessible design tokens for LINGUA AI (DLD & Dyslexia support)",
+  "color": {
+    "brand": {
+      "primary": {
+        "50": "#F4F4FD",
+        "100": "#E9E9FF",
+        "200": "#D3D3FA",
+        "300": "#B3B3F5",
+        "400": "#8787ED",
+        "500": "#6B6BE2",
+        "600": "#5B5BD6",
+        "700": "#4A4ABF",
+        "800": "#3C3CA0",
+        "900": "#2C2C7A"
+      },
+      "accent": {
+        "50": "#FEF7F4",
+        "100": "#FDEEE8",
+        "200": "#FBD8CB",
+        "300": "#F9BEA8",
+        "400": "#F7A88A",
+        "500": "#F59E7A",
+        "600": "#E27F57",
+        "700": "#BF613A",
+        "800": "#964827",
+        "900": "#70331A"
+      }
+    },
+    "text": {
+      "primary": "#18202A",
+      "secondary": "#45515E",
+      "muted": "#64748B",
+      "disabled": "#94A3B8",
+      "inverse": "#FFFFFF"
+    },
+    "surface": {
+      "canvas": "#F8FAFC",
+      "card": "#FFFFFF",
+      "subtle": "#F1F5F9",
+      "overlay": "rgba(24, 32, 42, 0.4)",
+      "border": "#E2E8F0",
+      "borderFocused": "#5B5BD6"
+    },
+    "semantic": {
+      "success": {
+        "text": "#1E5E46",
+        "surface": "#EBF7F2",
+        "border": "#2F8F6B",
+        "solid": "#2F8F6B"
+      },
+      "warning": {
+        "text": "#784F14",
+        "surface": "#FDF8ED",
+        "border": "#B7791F",
+        "solid": "#B7791F"
+      },
+      "danger": {
+        "text": "#822B36",
+        "surface": "#FDF2F4",
+        "border": "#B94A59",
+        "solid": "#B94A59"
+      },
+      "info": {
+        "text": "#2C2C7A",
+        "surface": "#F4F4FD",
+        "border": "#5B5BD6",
+        "solid": "#5B5BD6"
+      }
+    },
+    "tracks": {
+      "dldSupport": {
+        "primary": "#5B5BD6",
+        "tint": "#E9E9FF",
+        "label": "Spoken Language Support (DLD)"
+      },
+      "literacySupport": {
+        "primary": "#2F8F6B",
+        "tint": "#EBF7F2",
+        "label": "Literacy & Reading Support (Dyslexia)"
+      },
+      "multimodal": {
+        "primary": "#F59E7A",
+        "tint": "#FDEEE8",
+        "label": "Connected Oral & Written Support"
+      }
+    }
+  },
+  "typography": {
+    "fontFamily": {
+      "primary": "Atkinson Hyperlegible, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+      "secondary": "Inter, -apple-system, BlinkMacSystemFont, sans-serif",
+      "dyslexicAlternative": "OpenDyslexic, Atkinson Hyperlegible, sans-serif"
+    },
+    "scale": {
+      "display": {
+        "fontSize": "36px",
+        "lineHeight": "44px",
+        "fontWeight": 700,
+        "letterSpacing": "-0.02em"
+      },
+      "h1": {
+        "fontSize": "30px",
+        "lineHeight": "38px",
+        "fontWeight": 700,
+        "letterSpacing": "-0.01em"
+      },
+      "h2": {
+        "fontSize": "24px",
+        "lineHeight": "32px",
+        "fontWeight": 600,
+        "letterSpacing": "-0.01em"
+      },
+      "h3": {
+        "fontSize": "20px",
+        "lineHeight": "28px",
+        "fontWeight": 600,
+        "letterSpacing": "0em"
+      },
+      "bodyLarge": {
+        "fontSize": "18px",
+        "lineHeight": "27px",
+        "fontWeight": 400,
+        "letterSpacing": "0.01em"
+      },
+      "body": {
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "fontWeight": 400,
+        "letterSpacing": "0.01em"
+      },
+      "bodySmall": {
+        "fontSize": "14px",
+        "lineHeight": "21px",
+        "fontWeight": 400,
+        "letterSpacing": "0.01em"
+      },
+      "caption": {
+        "fontSize": "12px",
+        "lineHeight": "18px",
+        "fontWeight": 500,
+        "letterSpacing": "0.02em"
+      }
+    }
+  },
+  "spacing": {
+    "base": "4px",
+    "1": "4px",
+    "2": "8px",
+    "3": "12px",
+    "4": "16px",
+    "5": "20px",
+    "6": "24px",
+    "8": "32px",
+    "10": "40px",
+    "12": "48px",
+    "16": "64px"
+  },
+  "borderRadius": {
+    "small": "10px",
+    "card": "14px",
+    "hero": "20px",
+    "full": "9999px"
+  },
+  "touchTarget": {
+    "minimum": "44px",
+    "childPreferred": "56px"
+  },
+  "shadows": {
+    "card": "0 1px 3px rgba(24, 32, 42, 0.05), 0 1px 2px rgba(24, 32, 42, 0.03)",
+    "cardHover": "0 4px 6px -1px rgba(24, 32, 42, 0.07), 0 2px 4px -2px rgba(24, 32, 42, 0.04)",
+    "modal": "0 10px 15px -3px rgba(24, 32, 42, 0.1), 0 4px 6px -4px rgba(24, 32, 42, 0.05)"
+  },
+  "focus": {
+    "outlineWidth": "3px",
+    "outlineStyle": "solid",
+    "outlineColor": "#5B5BD6",
+    "outlineOffset": "2px"
+  },
+  "motion": {
+    "durations": {
+      "micro": "150ms",
+      "page": "200ms",
+      "card": "220ms",
+      "reward": "500ms"
+    },
+    "easings": {
+      "standard": "cubic-bezier(0.2, 0.0, 0.0, 1.0)",
+      "decelerate": "cubic-bezier(0.0, 0.0, 0.2, 1.0)",
+      "accelerate": "cubic-bezier(0.4, 0.0, 1.0, 1.0)"
+    }
+  }
+}

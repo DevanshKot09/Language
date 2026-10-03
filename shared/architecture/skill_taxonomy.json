@@ -1,0 +1,131 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "name": "LINGUA AI Skill Taxonomy",
+  "version": "1.0.0",
+  "description": "Distinct skill hierarchies separating DLD spoken-language domains from Dyslexia written-language domains",
+  "tracks": {
+    "DLD_SUPPORT": {
+      "id": "DLD_SUPPORT",
+      "displayName": "Spoken Language Track (DLD Focus)",
+      "evidenceBasis": "CATALISE Phase 1 & 2 [S1, S2], ASHA Spoken Language Disorders [S3], Winters et al. 2022 [S5], Donolato et al. 2023 [S7]",
+      "domains": [
+        {
+          "id": "dld_vocabulary",
+          "name": "Vocabulary Breadth & Depth",
+          "description": "Targeted word learning with phonological and semantic cues and retrieval practice",
+          "priority": "ESSENTIAL"
+        },
+        {
+          "id": "dld_grammar",
+          "name": "Morphosyntax & Grammar",
+          "description": "Grammatical morphemes, verb tense agreement, and syntactic structures",
+          "priority": "ESSENTIAL"
+        },
+        {
+          "id": "dld_sentence_formation",
+          "name": "Sentence Formulation & Comprehension",
+          "description": "Building and understanding complex sentence clauses and connecting ideas",
+          "priority": "ESSENTIAL"
+        },
+        {
+          "id": "dld_listening_comprehension",
+          "name": "Listening Comprehension",
+          "description": "Following multi-step oral instructions, extracting central themes, and inferencing",
+          "priority": "ESSENTIAL"
+        },
+        {
+          "id": "dld_speaking_practice",
+          "name": "Structured Expressive Speaking",
+          "description": "Oral sentence formulation, describing events, and conversational turns",
+          "priority": "ESSENTIAL"
+        },
+        {
+          "id": "dld_narrative_storytelling",
+          "name": "Narrative Macrostructure & Retell",
+          "description": "Story grammar elements: setting, initiating event, internal response, attempt, consequence",
+          "priority": "IMPORTANT"
+        },
+        {
+          "id": "dld_pragmatics",
+          "name": "Social Communication & Pragmatics",
+          "description": "Contextual communicative intent, conversational repair, and perspective taking",
+          "priority": "OPTIONAL"
+        }
+      ]
+    },
+    "LITERACY_SUPPORT": {
+      "id": "LITERACY_SUPPORT",
+      "displayName": "Literacy & Reading Track (Dyslexia Focus)",
+      "evidenceBasis": "IDA 2025 Definition [S20], Catts et al. 2026 [S21], Hall et al. 40-Year Meta-Analysis [S23], WWC Foundational Reading [S24]",
+      "domains": [
+        {
+          "id": "dys_phonological_awareness",
+          "name": "Phonological & Phonemic Awareness",
+          "description": "Sound isolation, blending, segmenting, and phoneme manipulation",
+          "priority": "ESSENTIAL"
+        },
+        {
+          "id": "dys_phonics",
+          "name": "Systematic Phonics & Grapheme Mapping",
+          "description": "Explicit sound-symbol correspondence, vowel teams, and syllable types",
+          "priority": "ESSENTIAL"
+        },
+        {
+          "id": "dys_decoding",
+          "name": "Word Recognition & Decoding",
+          "description": "Regular decoding, multisyllabic word attack, and high-frequency orthographic recognition",
+          "priority": "ESSENTIAL"
+        },
+        {
+          "id": "dys_spelling",
+          "name": "Spelling & Orthographic Patterns",
+          "description": "Encoding phonemes into graphemes, morphological spelling rules, and word families",
+          "priority": "IMPORTANT"
+        },
+        {
+          "id": "dys_fluency",
+          "name": "Reading Fluency & Automaticity",
+          "description": "Accurate, paced reading in connected text with natural phrasing",
+          "priority": "ESSENTIAL"
+        },
+        {
+          "id": "dys_reading_comprehension",
+          "name": "Text Comprehension & Strategy Use",
+          "description": "Comprehension strategies, summarization, and text structure analysis",
+          "priority": "ESSENTIAL"
+        },
+        {
+          "id": "dys_writing_support",
+          "name": "Written Expression & Sentence Construction",
+          "description": "Structuring written sentences, paragraphs, and editing with assistive tools",
+          "priority": "IMPORTANT"
+        }
+      ]
+    },
+    "SHARED_ACCOMMODATION_TOOLS": {
+      "id": "SHARED_ACCOMMODATION_TOOLS",
+      "displayName": "Universal Access & Accommodation Layer",
+      "evidenceBasis": "Wood et al. 2017 TTS Meta-Analysis [S26], Understood AT [S27, S28], WCAG 2.2 AA",
+      "tools": [
+        {
+          "id": "acc_tts",
+          "name": "Text-to-Speech & Read Aloud",
+          "description": "Adjustable speed, synchronized word highlighting, and voice selection",
+          "priority": "ESSENTIAL"
+        },
+        {
+          "id": "acc_stt",
+          "name": "Speech-to-Text & Dictation",
+          "description": "Voice typing with user-initiated recording and manual text editing",
+          "priority": "IMPORTANT"
+        },
+        {
+          "id": "acc_display",
+          "name": "Adaptive Text & Contrast Display",
+          "description": "Font selection (Atkinson Hyperlegible), line/letter spacing, contrast themes",
+          "priority": "ESSENTIAL"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,147 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "name": "LINGUA AI Information Architecture",
+  "version": "1.0.0",
+  "description": "Multi-role navigation taxonomy and screen routing specification",
+  "roles": {
+    "LEARNER": {
+      "displayName": "Learner",
+      "navigationModel": {
+        "mobile": {
+          "type": "bottom_navigation_bar",
+          "items": [
+            { "id": "home", "label": "Today", "icon": "sparkles", "route": "/learner/home", "screenId": "UX-12" },
+            { "id": "path", "label": "Learning Path", "icon": "route", "route": "/learner/path", "screenId": "UX-13" },
+            { "id": "practice", "label": "Practice", "icon": "book-open", "route": "/learner/practice", "screenId": "UX-14-25" },
+            { "id": "progress", "label": "Progress", "icon": "trending-up", "route": "/learner/progress", "screenId": "UX-28" },
+            { "id": "settings", "label": "Settings", "icon": "settings", "route": "/learner/settings", "screenId": "UX-31" }
+          ]
+        },
+        "desktop": {
+          "type": "sidebar_navigation_rail",
+          "sections": [
+            {
+              "title": "Daily Practice",
+              "items": [
+                { "id": "home", "label": "Home Dashboard", "route": "/learner/home", "screenId": "UX-12" },
+                { "id": "path", "label": "Personalized Skill Path", "route": "/learner/path", "screenId": "UX-13" },
+                { "id": "practice", "label": "Skill Practice Hub", "route": "/learner/practice", "screenId": "UX-14-25" }
+              ]
+            },
+            {
+              "title": "My Growth",
+              "items": [
+                { "id": "progress", "label": "Progress & Strengths", "route": "/learner/progress", "screenId": "UX-28" },
+                { "id": "goals", "label": "Goals & Milestones", "route": "/learner/goals", "screenId": "UX-30" },
+                { "id": "achievements", "label": "Achievements", "route": "/learner/achievements", "screenId": "UX-29" }
+              ]
+            },
+            {
+              "title": "Preferences & Support",
+              "items": [
+                { "id": "accessibility", "label": "Accessibility Center", "route": "/settings/accessibility", "screenId": "UX-32" },
+                { "id": "voice_center", "label": "Voice & Audio Privacy", "route": "/settings/voice-privacy", "screenId": "UX-42" },
+                { "id": "settings", "label": "Account & App Settings", "route": "/settings/general", "screenId": "UX-31" }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "PARENT": {
+      "displayName": "Parent / Caregiver",
+      "navigationModel": {
+        "mobile": {
+          "type": "bottom_navigation_bar",
+          "items": [
+            { "id": "dashboard", "label": "Overview", "icon": "home", "route": "/parent/dashboard", "screenId": "UX-33" },
+            { "id": "children", "label": "Children", "icon": "users", "route": "/parent/children", "screenId": "UX-36" },
+            { "id": "practice", "label": "Home Practice", "icon": "heart-handshake", "route": "/parent/home-tasks", "screenId": "UX-33" },
+            { "id": "reports", "label": "Reports", "icon": "file-text", "route": "/parent/reports", "screenId": "UX-39" },
+            { "id": "settings", "label": "Settings", "icon": "settings", "route": "/parent/settings", "screenId": "UX-31" }
+          ]
+        },
+        "desktop": {
+          "type": "sidebar_navigation_rail",
+          "sections": [
+            {
+              "title": "Family Hub",
+              "items": [
+                { "id": "dashboard", "label": "Parent Dashboard", "route": "/parent/dashboard", "screenId": "UX-33" },
+                { "id": "children", "label": "Child Profiles & Consent", "route": "/parent/children", "screenId": "UX-36" },
+                { "id": "home_activities", "label": "Assigned Home Activities", "route": "/parent/home-tasks", "screenId": "UX-33" }
+              ]
+            },
+            {
+              "title": "Insights & Coordination",
+              "items": [
+                { "id": "progress", "label": "Skill Trends & Observations", "route": "/parent/progress", "screenId": "UX-28" },
+                { "id": "reports", "label": "Shareable Progress Reports", "route": "/parent/reports", "screenId": "UX-39" },
+                { "id": "collaborators", "label": "Connected Educators & Specialists", "route": "/parent/collaborators", "screenId": "UX-41" }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "TEACHER": {
+      "displayName": "Educator / Classroom Teacher",
+      "navigationModel": {
+        "desktop": {
+          "type": "sidebar_navigation_rail",
+          "sections": [
+            {
+              "title": "Classroom Management",
+              "items": [
+                { "id": "dashboard", "label": "Teacher Dashboard", "route": "/teacher/dashboard", "screenId": "UX-34" },
+                { "id": "students", "label": "Student Roster & Cohorts", "route": "/teacher/students", "screenId": "UX-34" },
+                { "id": "assignments", "label": "Practice Assignments", "route": "/teacher/assignments", "screenId": "UX-37" }
+              ]
+            },
+            {
+              "title": "Classroom Insights",
+              "items": [
+                { "id": "progress", "label": "Cohort Skill Trends", "route": "/teacher/progress", "screenId": "UX-34" },
+                { "id": "reports", "label": "Learning Summaries", "route": "/teacher/reports", "screenId": "UX-39" },
+                { "id": "specialist_sync", "label": "Specialist Coordination", "route": "/teacher/collaboration", "screenId": "UX-41" }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "SPECIALIST": {
+      "displayName": "Speech-Language Pathologist / Learning Specialist",
+      "navigationModel": {
+        "desktop": {
+          "type": "sidebar_navigation_rail",
+          "sections": [
+            {
+              "title": "Clinical Caseload",
+              "items": [
+                { "id": "dashboard", "label": "Specialist Caseload", "route": "/specialist/dashboard", "screenId": "UX-35" },
+                { "id": "learners", "label": "Learner Profiles & History", "route": "/specialist/learners", "screenId": "UX-36" },
+                { "id": "assessments", "label": "Screening & Baseline Results", "route": "/specialist/assessments", "screenId": "UX-11" }
+              ]
+            },
+            {
+              "title": "Goal & Plan Oversight",
+              "items": [
+                { "id": "goals", "label": "Clinical Goal Builder", "route": "/specialist/goals", "screenId": "UX-38" },
+                { "id": "plans", "label": "Targeted Practice Plans", "route": "/specialist/plans", "screenId": "UX-37" },
+                { "id": "trends", "label": "Longitudinal Skill Trends", "route": "/specialist/trends", "screenId": "UX-35" }
+              ]
+            },
+            {
+              "title": "Professional Sharing",
+              "items": [
+                { "id": "reports", "label": "Structured Progress Summaries", "route": "/specialist/reports", "screenId": "UX-40" },
+                { "id": "collaboration", "label": "Team & Guardian Permissions", "route": "/specialist/permissions", "screenId": "UX-41" }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  }
+}

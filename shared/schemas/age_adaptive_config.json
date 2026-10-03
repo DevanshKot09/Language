@@ -1,0 +1,177 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "name": "AgeAdaptiveConfiguration",
+  "version": "1.0.0",
+  "description": "Unified adaptive configuration engine defining presentation, interaction, reward, and accessibility defaults by age profile",
+  "profiles": {
+    "CHILD": {
+      "id": "CHILD",
+      "targetAgeRange": "5-11",
+      "displayName": "Child Learner",
+      "typography": {
+        "baseFontSize": "18px",
+        "lineSpacingMultiplier": 1.6,
+        "wordSpacingMultiplier": 1.25,
+        "fontFamilyPreference": "Atkinson Hyperlegible",
+        "emphasisStyle": "highlight_pill"
+      },
+      "contentComplexity": {
+        "maxSentencesPerCard": 2,
+        "maxWordsPerSentence": 8,
+        "vocabularyTier": "foundational",
+        "audioInstructionDefault": true,
+        "allowTextSimplification": true,
+        "microSessionDurationMinutes": 3
+      },
+      "visualStyle": {
+        "density": "comfortable_airy",
+        "illustrationStyle": "warm_character_friendly",
+        "iconScale": 1.35,
+        "cardPadding": "24px",
+        "contrastMode": "warm_high_contrast",
+        "colorScheme": "warm_primary"
+      },
+      "interactionStyle": {
+        "tasksPerScreen": 1,
+        "minTouchTarget": "56px",
+        "inputModes": ["large_tap", "card_select", "voice_optional"],
+        "confirmBeforeAction": false,
+        "autoAdvanceDelayMs": 800
+      },
+      "rewardStyle": {
+        "type": "effort_and_completion",
+        "currencyName": "Stars & Explorations",
+        "visualReward": "gentle_star_burst",
+        "showStreaks": false,
+        "negativeLanguageAllowed": false,
+        "publicLeaderboardAllowed": false,
+        "xpDeductionOnRetry": false
+      },
+      "animationLevel": {
+        "level": "gentle",
+        "allowTransitions": true,
+        "allowDecorativeMotion": true,
+        "respectSystemReducedMotion": true
+      },
+      "accessibilityDefaults": {
+        "textToSpeechAutoPlay": true,
+        "speechSpeed": 0.85,
+        "wordHighlighting": true,
+        "screenReaderOptimized": true
+      }
+    },
+    "TEEN": {
+      "id": "TEEN",
+      "targetAgeRange": "12-17",
+      "displayName": "Teen Learner",
+      "typography": {
+        "baseFontSize": "16px",
+        "lineSpacingMultiplier": 1.5,
+        "wordSpacingMultiplier": 1.15,
+        "fontFamilyPreference": "Atkinson Hyperlegible",
+        "emphasisStyle": "subtle_bold"
+      },
+      "contentComplexity": {
+        "maxSentencesPerCard": 4,
+        "maxWordsPerSentence": 14,
+        "vocabularyTier": "academic_applied",
+        "audioInstructionDefault": false,
+        "allowTextSimplification": true,
+        "microSessionDurationMinutes": 5
+      },
+      "visualStyle": {
+        "density": "standard",
+        "illustrationStyle": "modern_editorial_minimal",
+        "iconScale": 1.1,
+        "cardPadding": "20px",
+        "contrastMode": "clean_balanced",
+        "colorScheme": "modern_indigo"
+      },
+      "interactionStyle": {
+        "tasksPerScreen": 2,
+        "minTouchTarget": "48px",
+        "inputModes": ["tap", "drag_match", "voice_optional", "keyboard"],
+        "confirmBeforeAction": false,
+        "autoAdvanceDelayMs": 400
+      },
+      "rewardStyle": {
+        "type": "achievement_and_skill_milestone",
+        "currencyName": "Skill Badges & Milestones",
+        "visualReward": "badge_unlock_banner",
+        "showStreaks": true,
+        "forgivingStreaks": true,
+        "negativeLanguageAllowed": false,
+        "publicLeaderboardAllowed": false,
+        "xpDeductionOnRetry": false
+      },
+      "animationLevel": {
+        "level": "crisp",
+        "allowTransitions": true,
+        "allowDecorativeMotion": false,
+        "respectSystemReducedMotion": true
+      },
+      "accessibilityDefaults": {
+        "textToSpeechAutoPlay": false,
+        "speechSpeed": 1.0,
+        "wordHighlighting": true,
+        "screenReaderOptimized": true
+      }
+    },
+    "ADULT": {
+      "id": "ADULT",
+      "targetAgeRange": "18+",
+      "displayName": "Adult Learner / Professional",
+      "typography": {
+        "baseFontSize": "16px",
+        "lineSpacingMultiplier": 1.5,
+        "wordSpacingMultiplier": 1.1,
+        "fontFamilyPreference": "Atkinson Hyperlegible",
+        "emphasisStyle": "understated_underline"
+      },
+      "contentComplexity": {
+        "maxSentencesPerCard": 6,
+        "maxWordsPerSentence": 20,
+        "vocabularyTier": "professional_practical_workplace",
+        "audioInstructionDefault": false,
+        "allowTextSimplification": false,
+        "microSessionDurationMinutes": 10
+      },
+      "visualStyle": {
+        "density": "compact_productive",
+        "illustrationStyle": "minimalist_refined",
+        "iconScale": 1.0,
+        "cardPadding": "16px",
+        "contrastMode": "high_clarity",
+        "colorScheme": "slate_neutral"
+      },
+      "interactionStyle": {
+        "tasksPerScreen": "flexible_list",
+        "minTouchTarget": "44px",
+        "inputModes": ["keyboard_shortcuts", "click_tap", "dictation", "upload"],
+        "confirmBeforeAction": true,
+        "autoAdvanceDelayMs": 0
+      },
+      "rewardStyle": {
+        "type": "competence_and_goal_tracking",
+        "currencyName": "Mastery Milestones",
+        "visualReward": "subtle_progress_check",
+        "showStreaks": false,
+        "negativeLanguageAllowed": false,
+        "publicLeaderboardAllowed": false,
+        "xpDeductionOnRetry": false
+      },
+      "animationLevel": {
+        "level": "minimal",
+        "allowTransitions": true,
+        "allowDecorativeMotion": false,
+        "respectSystemReducedMotion": true
+      },
+      "accessibilityDefaults": {
+        "textToSpeechAutoPlay": false,
+        "speechSpeed": 1.0,
+        "wordHighlighting": false,
+        "screenReaderOptimized": true
+      }
+    }
+  }
+}

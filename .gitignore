@@ -1,0 +1,38 @@
+# Environment variables & secrets
+.env
+.env.*
+*.env
+!*.env.example
+*.pem
+*.key
+*serviceAccountKey*.json
+*firebase-adminsdk*.json
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.sqlite
+*.db
+.pytest_cache/
+.venv/
+env/
+venv/
+
+# Flutter / Dart
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+build/
+*.mode1v3
+*.mode2v3
+*.moved-aside
+*.pbxuser
+*.perspectivev3
+**/.DS_Store
+
+# Agent configs & dumps
+.agents/
+skills-lock.json
+current_ui.xml
