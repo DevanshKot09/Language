@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import '../constants/environment.dart';
 import '../errors/app_exception.dart';
@@ -24,7 +25,7 @@ abstract class IApiClient {
 /// before dispatching requests to FastAPI.
 class ApiClient implements IApiClient {
   final http.Client _client;
-  final String _baseUrl;
+  String _baseUrl;
   final Duration _timeout;
   final TokenProvider? _tokenProvider;
   String? _authToken;
@@ -51,6 +52,46 @@ class ApiClient implements IApiClient {
     final cleanPath = path.startsWith('/') ? path : '/$path';
     final fullUrl = '$cleanBase$cleanPath';
     return Uri.parse(fullUrl).replace(queryParameters: queryParameters);
+  }
+
+  Uri _getAlternateUri(Uri uri) {
+    if (!kIsWeb && Platform.isAndroid) {
+      if (uri.host == '10.0.2.2') {
+        return uri.replace(host: '127.0.0.1');
+      } else if (uri.host == '127.0.0.1') {
+        return uri.replace(host: '10.0.2.2');
+      }
+    }
+    return uri;
+  }
+
+  Future<http.Response> _executeWithFallback(
+    Future<http.Response> Function(Uri uri) requestFn,
+    Uri uri,
+  ) async {
+    try {
+      return await requestFn(uri).timeout(_timeout);
+    } on SocketException {
+      final alt = _getAlternateUri(uri);
+      if (alt != uri) {
+        try {
+          final res = await requestFn(alt).timeout(_timeout);
+          _baseUrl = '${alt.scheme}://${alt.host}:${alt.port}';
+          return res;
+        } catch (_) {}
+      }
+      rethrow;
+    } on http.ClientException {
+      final alt = _getAlternateUri(uri);
+      if (alt != uri) {
+        try {
+          final res = await requestFn(alt).timeout(_timeout);
+          _baseUrl = '${alt.scheme}://${alt.host}:${alt.port}';
+          return res;
+        } catch (_) {}
+      }
+      rethrow;
+    }
   }
 
   Future<Map<String, String>> _buildHeaders([Map<String, String>? additionalHeaders]) async {
@@ -86,7 +127,10 @@ class ApiClient implements IApiClient {
     final uri = _buildUri(path, queryParameters);
     try {
       final resolvedHeaders = await _buildHeaders(headers);
-      final response = await _client.get(uri, headers: resolvedHeaders).timeout(_timeout);
+      final response = await _executeWithFallback(
+        (u) => _client.get(u, headers: resolvedHeaders),
+        uri,
+      );
       return _handleResponse(response);
     } on TimeoutException {
       throw const NetworkException('Request timed out. Please check your connection and try again.');
@@ -107,9 +151,10 @@ class ApiClient implements IApiClient {
     try {
       final resolvedHeaders = await _buildHeaders(headers);
       final encodedBody = body != null ? jsonEncode(body) : null;
-      final response = await _client
-          .post(uri, headers: resolvedHeaders, body: encodedBody)
-          .timeout(_timeout);
+      final response = await _executeWithFallback(
+        (u) => _client.post(u, headers: resolvedHeaders, body: encodedBody),
+        uri,
+      );
       return _handleResponse(response);
     } on TimeoutException {
       throw const NetworkException('Request timed out. Please check your connection and try again.');
@@ -130,9 +175,10 @@ class ApiClient implements IApiClient {
     try {
       final resolvedHeaders = await _buildHeaders(headers);
       final encodedBody = body != null ? jsonEncode(body) : null;
-      final response = await _client
-          .put(uri, headers: resolvedHeaders, body: encodedBody)
-          .timeout(_timeout);
+      final response = await _executeWithFallback(
+        (u) => _client.put(u, headers: resolvedHeaders, body: encodedBody),
+        uri,
+      );
       return _handleResponse(response);
     } on TimeoutException {
       throw const NetworkException('Request timed out. Please check your connection and try again.');
@@ -153,9 +199,10 @@ class ApiClient implements IApiClient {
     try {
       final resolvedHeaders = await _buildHeaders(headers);
       final encodedBody = body != null ? jsonEncode(body) : null;
-      final response = await _client
-          .delete(uri, headers: resolvedHeaders, body: encodedBody)
-          .timeout(_timeout);
+      final response = await _executeWithFallback(
+        (u) => _client.delete(u, headers: resolvedHeaders, body: encodedBody),
+        uri,
+      );
       return _handleResponse(response);
     } on TimeoutException {
       throw const NetworkException('Request timed out. Please check your connection and try again.');
@@ -176,9 +223,10 @@ class ApiClient implements IApiClient {
     try {
       final resolvedHeaders = await _buildHeaders(headers);
       final encodedBody = body != null ? jsonEncode(body) : null;
-      final response = await _client
-          .patch(uri, headers: resolvedHeaders, body: encodedBody)
-          .timeout(_timeout);
+      final response = await _executeWithFallback(
+        (u) => _client.patch(u, headers: resolvedHeaders, body: encodedBody),
+        uri,
+      );
       return _handleResponse(response);
     } on TimeoutException {
       throw const NetworkException('Request timed out. Please check your connection and try again.');

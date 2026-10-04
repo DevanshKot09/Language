@@ -32,7 +32,8 @@ import '../../features/collaboration/presentation/screens/teacher_dashboard_scre
 import '../../features/collaboration/presentation/screens/create_assignment_screen.dart';
 import '../../features/collaboration/presentation/screens/specialist_dashboard_screen.dart';
 import '../../features/collaboration/presentation/screens/specialist_learner_detail_screen.dart';
-import '../../features/collaboration/presentation/screens/report_builder_screen.dart';
+import '../../features/collaboration/presentation/screens/learner_report_screen.dart';
+import '../../features/collaboration/presentation/screens/specialist_schedule_screen.dart';
 import '../../features/collaboration/presentation/screens/relationships_screen.dart';
 import '../../features/collaboration/presentation/screens/invite_collaborator_screen.dart';
 
@@ -73,7 +74,9 @@ class AppRoutes {
   static const String createAssignment = '/teacher/assignments/create';
   static const String specialistDashboard = '/specialist';
   static const String specialistLearnerDetail = '/specialist/learner';
+  static const String specialistSchedule = '/specialist/schedule';
   static const String reportBuilder = '/reports/builder';
+  static const String learnerReport = '/reports/learner';
   static const String relationships = '/relationships';
   static const String inviteCollaborator = '/relationships/invite';
 }
@@ -242,9 +245,10 @@ class AppRouter {
           builder: (_) => const CreateAssignmentScreen(),
         );
       case AppRoutes.specialistDashboard:
+        final initialTab = settings.arguments as int? ?? 0;
         return MaterialPageRoute(
           settings: settings,
-          builder: (_) => const SpecialistDashboardScreen(),
+          builder: (_) => SpecialistDashboardScreen(initialTab: initialTab),
         );
       case AppRoutes.specialistLearnerDetail:
         final learnerId = settings.arguments as String? ?? '';
@@ -252,11 +256,17 @@ class AppRouter {
           settings: settings,
           builder: (_) => SpecialistLearnerDetailScreen(learnerId: learnerId),
         );
+      case AppRoutes.specialistSchedule:
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => const SpecialistScheduleScreen(showBottomNav: true),
+        );
       case AppRoutes.reportBuilder:
+      case AppRoutes.learnerReport:
         final learnerId = settings.arguments as String?;
         return MaterialPageRoute(
           settings: settings,
-          builder: (_) => ReportBuilderScreen(initialLearnerId: learnerId),
+          builder: (_) => LearnerReportScreen(learnerId: learnerId),
         );
       case AppRoutes.relationships:
         return MaterialPageRoute(

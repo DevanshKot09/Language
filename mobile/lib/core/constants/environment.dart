@@ -1,3 +1,6 @@
+import 'dart:io';
+import 'package:flutter/foundation.dart';
+
 /// Environment configuration for LINGUA AI.
 /// Configurable via compile-time variables: --dart-define=API_BASE_URL=...
 class Environment {
@@ -8,12 +11,15 @@ class Environment {
 
   static const String _configuredApiBaseUrl = String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: 'http://127.0.0.1:8000',
+    defaultValue: '',
   );
 
   static String get apiBaseUrl {
     if (_configuredApiBaseUrl.isNotEmpty) {
       return _configuredApiBaseUrl;
+    }
+    if (!kIsWeb && Platform.isAndroid) {
+      return 'http://10.0.2.2:8000';
     }
     return 'http://127.0.0.1:8000';
   }

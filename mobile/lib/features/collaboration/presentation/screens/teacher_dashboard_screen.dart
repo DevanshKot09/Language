@@ -56,7 +56,7 @@ class _TeacherDashboardScreenState extends ConsumerState<TeacherDashboardScreen>
           IconButton(
             icon: const Icon(Icons.description_outlined),
             tooltip: 'Reports',
-            onPressed: () => Navigator.pushNamed(context, AppRoutes.reportBuilder),
+            onPressed: () => Navigator.pushNamed(context, AppRoutes.learnerReport),
           ),
         ],
         bottom: TabBar(

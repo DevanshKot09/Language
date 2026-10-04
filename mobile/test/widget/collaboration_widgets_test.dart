@@ -223,7 +223,7 @@ void main() {
       expect(find.text('Assignments: 1/2 completed'), findsOneWidget);
     });
 
-    testWidgets('SpecialistDashboardScreen renders caseload', (tester) async {
+    testWidgets('SpecialistDashboardScreen renders Stitch reference dashboard and caseload tab', (tester) async {
       const mockCaseload = [
         SpecialistCaseloadItem(
           relationshipId: 'rel-sp-10',
@@ -250,6 +250,22 @@ void main() {
       );
 
       await tester.pumpAndSettle();
+
+      // 1. Verify Stitch Home Dashboard Visual Hierarchy
+      expect(find.text('Lingua AI'), findsOneWidget);
+      expect(find.text('SPECIALIST'), findsOneWidget);
+      expect(find.text("Here's what needs your attention today."), findsOneWidget);
+      expect(find.text('Action required'), findsOneWidget);
+      expect(find.text('Review requests'), findsOneWidget);
+      expect(find.text('QUICK TOOLS'), findsOneWidget);
+      expect(find.text('Consents'), findsOneWidget);
+      expect(find.text('AI Suggestions'), findsOneWidget);
+      expect(find.text('Recent Activity'), findsOneWidget);
+
+      // 2. Switch to Caseload Tab to verify Caseload roster
+      await tester.tap(find.text('Caseload').last);
+      await tester.pumpAndSettle();
+
       expect(find.text('Specialist Caseload'), findsOneWidget);
       expect(find.text('Taylor'), findsOneWidget);
       expect(find.text('TEEN'), findsOneWidget);

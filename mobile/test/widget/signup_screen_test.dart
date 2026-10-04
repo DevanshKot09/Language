@@ -41,12 +41,11 @@ void main() {
 
       // Fields
       expect(find.text('Full name'), findsOneWidget);
-      expect(find.text('Required'), findsOneWidget);
+      expect(find.text('Required'), findsNWidgets(2));
       expect(find.text('Enter your full name'), findsOneWidget);
 
       expect(find.text('Email address'), findsOneWidget);
-      expect(find.text('Verification required'), findsOneWidget);
-      expect(find.text('Send OTP'), findsOneWidget);
+      expect(find.widgetWithText(TextField, 'you@example.com'), findsOneWidget);
 
       expect(find.text('Password'), findsOneWidget);
       expect(find.text('Create a password'), findsOneWidget);
@@ -138,7 +137,7 @@ void main() {
       expect(find.text('Child age group'), findsNothing);
     });
 
-    testWidgets('STATE 5, 6, 7: Email Send OTP shows verification boxes and countdown',
+    testWidgets('STATE 5, 6, 7: Email address entry accepts valid email without OTP block',
         (WidgetTester tester) async {
       tester.view.physicalSize = const Size(1080, 2400);
       tester.view.devicePixelRatio = 1.0;
@@ -155,26 +154,10 @@ void main() {
       await tester.enterText(emailFinder, 'sarah.jenkins@example.com');
       await tester.pump();
 
-      // Tap Send OTP
-      await tester.tap(find.text('Send OTP'));
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 700));
-
-      // OTP section appears
-      expect(find.text('Verification code'), findsOneWidget);
-      expect(find.textContaining('Resend in'), findsOneWidget);
-
-      // Enter 6 digits
-      final otpBoxes = find.byWidgetPredicate((w) => w is TextField && w.maxLength == 1);
-      expect(otpBoxes, findsNWidgets(6));
-      for (int i = 0; i < 6; i++) {
-        await tester.enterText(otpBoxes.at(i), '1');
-        await tester.pump();
-      }
-      await tester.pumpAndSettle();
-
-      // Shows Verified badge
-      expect(find.text('Verified'), findsWidgets);
+      // Verify OTP elements are absent
+      expect(find.text('Send OTP'), findsNothing);
+      expect(find.text('Verification code'), findsNothing);
+      expect(find.text('Verification required'), findsNothing);
     });
 
     testWidgets('STATE 8 & 9: Password strength updates correctly',

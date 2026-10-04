@@ -558,7 +558,7 @@ class _ParentDashboardScreenState extends ConsumerState<ParentDashboardScreen> {
                   description: 'Generate and review non-diagnostic practice summaries.',
                   icon: Icons.description_outlined,
                   color: LinguaTokens.accent600,
-                  onTap: () => Navigator.pushNamed(context, AppRoutes.reportBuilder),
+                  onTap: () => Navigator.pushNamed(context, AppRoutes.learnerReport),
                 ),
                 _buildActionCard(
                   title: 'Connected Team & Privacy',

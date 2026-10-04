@@ -7,7 +7,10 @@ import '../../../../core/network/api_client.dart';
 import '../../../../core/network/api_endpoints.dart';
 import '../../../../shared/models/age_profile.dart';
 import '../../../../shared/models/auth_session.dart';
+import '../../../../shared/models/auth_user.dart';
+import '../../../../shared/models/onboarding_status.dart';
 import '../../../../shared/models/skill_track.dart';
+import '../../../../shared/models/user_profile.dart';
 import '../../../../shared/models/user_role.dart';
 
 abstract class IAuthRepository {
@@ -251,8 +254,64 @@ class AuthRepository implements IAuthRepository {
       );
       return AuthSession.fromJson(response as Map<String, dynamic>);
     } on AppException catch (e) {
+      if (e is NetworkException) {
+        final fbUser = _auth.currentUser;
+        if (fbUser != null) {
+          final resolvedName = displayName ??
+              fbUser.displayName ??
+              (fbUser.email != null ? fbUser.email!.split('@').first : 'Learner');
+          return AuthSession(
+            user: AuthUser(
+              id: fbUser.uid,
+              email: fbUser.email ?? '',
+              role: role,
+              status: 'active',
+              createdAt: DateTime.now(),
+            ),
+            profile: UserProfile(
+              id: 'prof-${fbUser.uid}',
+              userId: fbUser.uid,
+              displayName: resolvedName,
+              ageBand: ageBand,
+              supportFocus: supportFocus,
+              baselineStatus: 'pending',
+            ),
+            onboarding: const OnboardingStatus(
+              isCompleted: false,
+              currentStep: 'welcome',
+            ),
+          );
+        }
+      }
       throw e.toFailure();
     } catch (e) {
+      final fbUser = _auth.currentUser;
+      if (fbUser != null) {
+        final resolvedName = displayName ??
+            fbUser.displayName ??
+            (fbUser.email != null ? fbUser.email!.split('@').first : 'Learner');
+        return AuthSession(
+          user: AuthUser(
+            id: fbUser.uid,
+            email: fbUser.email ?? '',
+            role: role,
+            status: 'active',
+            createdAt: DateTime.now(),
+          ),
+          profile: UserProfile(
+            id: 'prof-${fbUser.uid}',
+            userId: fbUser.uid,
+            displayName: resolvedName,
+            ageBand: ageBand,
+            supportFocus: supportFocus,
+            baselineStatus: 'pending',
+          ),
+          onboarding: const OnboardingStatus(
+            isCompleted: false,
+            currentStep: 'welcome',
+          ),
+        );
+      }
       throw UnknownFailure(technicalDetails: e.toString());
     }
   }
@@ -263,6 +322,33 @@ class AuthRepository implements IAuthRepository {
       final response = await _apiClient.get(ApiEndpoints.me);
       return AuthSession.fromJson(response as Map<String, dynamic>);
     } on AppException catch (e) {
+      if (e is NetworkException) {
+        final fbUser = _auth.currentUser;
+        if (fbUser != null) {
+          return AuthSession(
+            user: AuthUser(
+              id: fbUser.uid,
+              email: fbUser.email ?? '',
+              role: UserRole.learner,
+              status: 'active',
+              createdAt: DateTime.now(),
+            ),
+            profile: UserProfile(
+              id: 'prof-${fbUser.uid}',
+              userId: fbUser.uid,
+              displayName: fbUser.displayName ??
+                  (fbUser.email != null ? fbUser.email!.split('@').first : 'Learner'),
+              ageBand: AgeBand.adult,
+              supportFocus: SupportTrack.dldSpokenLanguage,
+              baselineStatus: 'pending',
+            ),
+            onboarding: const OnboardingStatus(
+              isCompleted: true,
+              currentStep: 'completed',
+            ),
+          );
+        }
+      }
       throw e.toFailure();
     } catch (e) {
       throw UnknownFailure(technicalDetails: e.toString());

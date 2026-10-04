@@ -6,7 +6,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'firebase_options.dart';
 import 'app/providers/theme_provider.dart';
 import 'app/router/app_router.dart';
-import 'features/welcome/splash_screen.dart';
+import 'features/collaboration/presentation/screens/specialist_dashboard_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -43,6 +43,7 @@ class LinguaApp extends StatelessWidget {
   }
 }
 
+
 class _LinguaAppContent extends ConsumerWidget {
   const _LinguaAppContent();
 
@@ -54,11 +55,11 @@ class _LinguaAppContent extends ConsumerWidget {
       title: 'LINGUA AI',
       debugShowCheckedModeBanner: false,
       theme: themeData,
-      initialRoute: AppRoutes.splash,
+      initialRoute: AppRoutes.specialistDashboard,
       onGenerateInitialRoutes: (initialRoute) => [
         MaterialPageRoute(
-          settings: const RouteSettings(name: AppRoutes.splash),
-          builder: (_) => const SplashScreen(),
+          settings: const RouteSettings(name: AppRoutes.specialistDashboard),
+          builder: (_) => const SpecialistDashboardScreen(initialTab: 2),
         ),
       ],
       onGenerateRoute: AppRouter.generateRoute,

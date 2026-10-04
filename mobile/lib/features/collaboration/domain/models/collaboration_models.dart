@@ -335,3 +335,69 @@ class SpecialistCaseloadItem {
     );
   }
 }
+
+/// Status of a scheduled specialist support session.
+enum ScheduleSessionStatus { upcoming, confirmed, completed, cancelled, requestPending }
+
+/// A single support session on the Specialist schedule.
+///
+/// Parsed from the FastAPI scheduling payload. Only minimum learner
+/// identification is carried (name + age band); reports stay in the
+/// Learner Profile flow.
+@immutable
+class SpecialistScheduleSession {
+  final String id;
+  final String learnerId;
+  final String learnerName;
+  final String ageBand;
+  final String sessionType;
+  final String? focus;
+  final DateTime startsAt;
+  final int durationMinutes;
+  final ScheduleSessionStatus status;
+  final String? requestedVia;
+
+  const SpecialistScheduleSession({
+    required this.id,
+    required this.learnerId,
+    required this.learnerName,
+    required this.ageBand,
+    required this.sessionType,
+    this.focus,
+    required this.startsAt,
+    required this.durationMinutes,
+    required this.status,
+    this.requestedVia,
+  });
+
+  static ScheduleSessionStatus _parseStatus(String? raw) {
+    switch (raw) {
+      case 'completed':
+        return ScheduleSessionStatus.completed;
+      case 'cancelled':
+        return ScheduleSessionStatus.cancelled;
+      case 'confirmed':
+        return ScheduleSessionStatus.confirmed;
+      case 'request_pending':
+      case 'pending':
+        return ScheduleSessionStatus.requestPending;
+      default:
+        return ScheduleSessionStatus.upcoming;
+    }
+  }
+
+  factory SpecialistScheduleSession.fromJson(Map<String, dynamic> json) {
+    return SpecialistScheduleSession(
+      id: json['id'] as String? ?? '',
+      learnerId: json['learner_id'] as String? ?? '',
+      learnerName: json['learner_name'] as String? ?? 'Learner',
+      ageBand: json['age_band'] as String? ?? 'child',
+      sessionType: json['session_type'] as String? ?? 'Support Session',
+      focus: json['focus'] as String?,
+      startsAt: DateTime.tryParse(json['starts_at'] as String? ?? '')?.toLocal() ?? DateTime.now(),
+      durationMinutes: (json['duration_minutes'] as num?)?.toInt() ?? 30,
+      status: _parseStatus(json['status'] as String?),
+      requestedVia: json['requested_via'] as String?,
+    );
+  }
+}

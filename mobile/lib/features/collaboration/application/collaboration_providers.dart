@@ -65,6 +65,17 @@ final availableSpecialistsProvider = FutureProvider<List<Map<String, dynamic>>>(
   return repo.getAvailableSpecialists();
 });
 
+/// Specialist schedule sessions.
+///
+/// The FastAPI backend does not yet expose a scheduling/appointments
+/// endpoint, so this resolves to an empty list and the Schedule screen
+/// shows its "schedule is clear" state. When the endpoint is added, wire a
+/// repository method here; the screen already renders
+/// [SpecialistScheduleSession] data.
+final specialistScheduleProvider = FutureProvider<List<SpecialistScheduleSession>>((ref) async {
+  return const <SpecialistScheduleSession>[];
+});
+
 // Reports Providers
 final reportsProvider = FutureProvider.family<List<ReportItem>, String?>((ref, learnerId) async {
   final repo = ref.watch(collaborationRepositoryProvider);
