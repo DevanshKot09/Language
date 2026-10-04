@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import '../../features/welcome/splash_screen.dart';
 import '../../features/welcome/welcome_screen.dart';
 import '../../features/role_selection/role_selection_screen.dart';
 import '../../features/age_selection/age_selection_screen.dart';
 import '../../features/onboarding/onboarding_screen.dart';
 import '../../features/authentication/login_screen.dart';
 import '../../features/authentication/signup_screen.dart';
+import '../../features/authentication/forgot_password_screen.dart';
 import '../../features/learner_home/learner_home_screen.dart';
 import '../../features/learning_path/learning_path_screen.dart';
 import '../../features/progress/progress_screen.dart';
@@ -36,12 +38,14 @@ import '../../features/collaboration/presentation/screens/invite_collaborator_sc
 
 /// Central route constants for LINGUA AI.
 class AppRoutes {
+  static const String splash = '/splash';
   static const String welcome = '/';
   static const String roles = '/roles';
   static const String ageMode = '/age-mode';
   static const String onboarding = '/onboarding';
   static const String login = '/login';
   static const String signup = '/signup';
+  static const String forgotPassword = '/forgot-password';
   static const String home = '/home';
   static const String path = '/path';
   static const String practice = '/practice';
@@ -79,6 +83,11 @@ class AppRoutes {
 class AppRouter {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
+      case AppRoutes.splash:
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => const SplashScreen(),
+        );
       case AppRoutes.welcome:
         return MaterialPageRoute(
           settings: settings,
@@ -108,6 +117,12 @@ class AppRouter {
         return MaterialPageRoute(
           settings: settings,
           builder: (_) => const SignupScreen(),
+        );
+      case AppRoutes.forgotPassword:
+        final initialEmail = settings.arguments as String?;
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => ForgotPasswordScreen(initialEmail: initialEmail),
         );
       case AppRoutes.home:
         return MaterialPageRoute(

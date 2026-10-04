@@ -131,6 +131,20 @@ class MockAuthRepository implements IAuthRepository {
     );
   }
 
+  String? lastResetEmailRequested;
+  bool shouldFailReset = false;
+
+  @override
+  Future<void> sendPasswordResetEmail(String email) async {
+    lastResetEmailRequested = email;
+    if (shouldFailReset) {
+      throw const UnknownFailure(
+        userMessage: 'Something went wrong. Please try again.',
+        technicalDetails: 'Mock reset failure',
+      );
+    }
+  }
+
   fb.UserCredential _createMockCredential(String email) {
     return FakeUserCredential();
   }

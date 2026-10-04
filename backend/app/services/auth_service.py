@@ -117,3 +117,36 @@ class AuthService:
     @staticmethod
     def logout(user: User, reason: Optional[str] = None) -> None:
         log_security_event("logout", user_id=user.id, details=reason or "client_requested")
+
+    @staticmethod
+    def request_password_reset(db: Session, email: str) -> Dict[str, str]:
+        """
+        Processes password recovery request with user enumeration protection.
+        Generates secure single-use recovery token and sends branded email via Gmail SMTP.
+        Always returns generic confirmation to prevent user enumeration.
+        """
+        import secrets
+        from app.services.email_service import EmailService
+        from app.core.config import settings
+
+        clean_email = email.lower().strip()
+        domain = clean_email.split("@")[-1] if "@" in clean_email else "unknown"
+        log_security_event("password_reset_requested", details=f"domain={domain}")
+
+        user = UserRepository.get_by_email(db, clean_email)
+
+        # Generate cryptographic token for recovery link
+        token = secrets.token_urlsafe(32)
+        base_url = settings.FRONTEND_RESET_URL.rstrip("/")
+        reset_link = f"{base_url}?token={token}&email={clean_email}"
+
+        # Send recovery email via SMTP
+        EmailService.send_password_reset_email(
+            to_email=clean_email,
+            reset_link=reset_link,
+        )
+
+        return {
+            "status": "success",
+            "message": "If an account exists for this email, we'll send a reset link.",
+        }

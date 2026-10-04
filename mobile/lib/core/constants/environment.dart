@@ -8,14 +8,14 @@ class Environment {
 
   static const String _configuredApiBaseUrl = String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: 'https://bee-neural-internal-warnings.trycloudflare.com',
+    defaultValue: 'http://127.0.0.1:8000',
   );
 
   static String get apiBaseUrl {
     if (_configuredApiBaseUrl.isNotEmpty) {
       return _configuredApiBaseUrl;
     }
-    return 'https://bee-neural-internal-warnings.trycloudflare.com';
+    return 'http://127.0.0.1:8000';
   }
 
   static const bool isDebug = bool.fromEnvironment(

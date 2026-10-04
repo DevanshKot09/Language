@@ -82,3 +82,20 @@ class AuthSessionResponse(BaseModel):
 
 class LogoutRequest(BaseModel):
     reason: Optional[str] = None
+
+
+class ForgotPasswordRequest(BaseModel):
+    email: str = Field(..., description="Email address to receive password reset link")
+
+    @model_validator(mode="after")
+    def validate_email_format(self) -> "ForgotPasswordRequest":
+        clean_email = self.email.strip()
+        if not clean_email or "@" not in clean_email or "." not in clean_email.split("@")[-1]:
+            raise ValueError("Please provide a valid email address.")
+        self.email = clean_email.lower()
+        return self
+
+
+class ForgotPasswordResponse(BaseModel):
+    status: str
+    message: str

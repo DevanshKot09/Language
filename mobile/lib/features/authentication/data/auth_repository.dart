@@ -40,6 +40,8 @@ abstract class IAuthRepository {
   });
 
   Future<AuthSession> getApplicationSession();
+
+  Future<void> sendPasswordResetEmail(String email);
 }
 
 class AuthRepository implements IAuthRepository {
@@ -264,6 +266,38 @@ class AuthRepository implements IAuthRepository {
       throw e.toFailure();
     } catch (e) {
       throw UnknownFailure(technicalDetails: e.toString());
+    }
+  }
+
+  @override
+  Future<void> sendPasswordResetEmail(String email) async {
+    final targetEmail = email.trim();
+    if (targetEmail.isEmpty || !targetEmail.contains('@')) {
+      throw const ValidationFailure(
+        userMessage: 'Enter a valid email address.',
+        technicalDetails: 'Empty or invalid email passed to sendPasswordResetEmail.',
+      );
+    }
+
+    try {
+      await _apiClient.post(
+        ApiEndpoints.forgotPassword,
+        body: {'email': targetEmail},
+      );
+    } on AppException catch (e) {
+      throw e.toFailure();
+    } catch (e) {
+      // Offline or network fallback to Firebase password reset
+      try {
+        await _auth.sendPasswordResetEmail(email: targetEmail);
+      } on fb.FirebaseAuthException catch (fbError) {
+        throw _mapFirebaseAuthException(fbError);
+      } catch (_) {
+        throw const NetworkFailure(
+          userMessage: 'Something went wrong. Please check your connection and try again.',
+          technicalDetails: 'Both FastAPI reset endpoint and Firebase fallback failed.',
+        );
+      }
     }
   }
 

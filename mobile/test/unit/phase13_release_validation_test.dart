@@ -10,6 +10,7 @@ void main() {
 
   group('Phase 13 Release Candidate Router & Configuration Validation', () {
     test('AppRoutes defines all essential learner and professional routes', () {
+      expect(AppRoutes.splash, equals('/splash'));
       expect(AppRoutes.welcome, equals('/'));
       expect(AppRoutes.login, equals('/login'));
       expect(AppRoutes.signup, equals('/signup'));
@@ -34,6 +35,7 @@ void main() {
 
     test('AppRouter generates valid MaterialPageRoute for core destinations', () {
       final routesToTest = [
+        AppRoutes.splash,
         AppRoutes.welcome,
         AppRoutes.login,
         AppRoutes.signup,

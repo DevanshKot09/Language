@@ -114,3 +114,37 @@ def test_logout_endpoint(client):
     )
     assert res.status_code == 200
     assert res.json()["status"] == "success"
+
+
+def test_forgot_password_valid_email_returns_safe_confirmation(client):
+    res = client.post(
+        "/api/v1/auth/forgot-password",
+        json={"email": "sarah.jenkins@example.com"},
+    )
+    assert res.status_code == 200
+    data = res.json()
+    assert data["status"] == "success"
+    assert "If an account exists" in data["message"]
+    # Check that secrets/tokens are never exposed in response
+    assert "token" not in data
+    assert "password" not in data
+
+
+def test_forgot_password_invalid_email_format(client):
+    res = client.post(
+        "/api/v1/auth/forgot-password",
+        json={"email": "not-an-email"},
+    )
+    assert res.status_code == 422
+
+
+def test_forgot_password_user_enumeration_protection(client):
+    # Non-existent user email receives identical generic message
+    res = client.post(
+        "/api/v1/auth/forgot-password",
+        json={"email": "nonexistent.user.test@example.com"},
+    )
+    assert res.status_code == 200
+    data = res.json()
+    assert data["status"] == "success"
+    assert "If an account exists for this email, we'll send a reset link." in data["message"]

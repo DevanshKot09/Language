@@ -9,10 +9,34 @@ from app.schemas.auth import (
     FirebaseSyncRequest,
     LogoutRequest,
     AuthSessionResponse,
+    ForgotPasswordRequest,
+    ForgotPasswordResponse,
 )
 from app.services.auth_service import AuthService
 
 router = APIRouter()
+
+
+@router.post(
+    "/forgot-password",
+    response_model=ForgotPasswordResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Initiate secure password reset email delivery via Gmail SMTP",
+)
+def forgot_password(
+    request: ForgotPasswordRequest,
+    db: Session = Depends(get_db),
+):
+    """
+    Accepts user email, verifies formatting, generates password recovery token,
+    and sends branded recovery email via Gmail SMTP.
+    Returns generic response to prevent user enumeration.
+    """
+    result = AuthService.request_password_reset(db=db, email=request.email)
+    return ForgotPasswordResponse(
+        status=result["status"],
+        message=result["message"],
+    )
 
 
 @router.post(

@@ -53,7 +53,18 @@ class Settings(BaseModel):
     RATE_LIMIT_ENABLED: bool = os.getenv("RATE_LIMIT_ENABLED", "true").lower() in ("true", "1", "yes")
     RATE_LIMIT_INVITATIONS_PER_MINUTE: int = int(os.getenv("RATE_LIMIT_INVITATIONS_PER_MINUTE", "20"))
     RATE_LIMIT_REPORTS_PER_MINUTE: int = int(os.getenv("RATE_LIMIT_REPORTS_PER_MINUTE", "15"))
+    # Rate Limiting
     RATE_LIMIT_AI_PER_MINUTE: int = int(os.getenv("RATE_LIMIT_AI_PER_MINUTE", "40"))
+
+    # Gmail SMTP Configuration (Password Recovery & Transactional Email)
+    SMTP_HOST: str = os.getenv("SMTP_HOST", "smtp.gmail.com")
+    SMTP_PORT: int = int(os.getenv("SMTP_PORT", "587"))
+    SMTP_SECURE: bool = os.getenv("SMTP_SECURE", "false").lower() in ("true", "1", "yes")
+    SMTP_USER: Optional[str] = os.getenv("SMTP_USER", None)
+    SMTP_PASSWORD: Optional[str] = os.getenv("SMTP_PASSWORD", None)
+    SMTP_FROM_EMAIL: Optional[str] = os.getenv("SMTP_FROM_EMAIL", None)
+    SMTP_FROM_NAME: str = os.getenv("SMTP_FROM_NAME", "LINGUA AI Support")
+    FRONTEND_RESET_URL: str = os.getenv("FRONTEND_RESET_URL", "https://lingua-ai-79735.web.app/reset-password")
 
 
 settings = Settings()
