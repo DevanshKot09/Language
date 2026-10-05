@@ -1,83 +1,174 @@
-# LINGUA AI 🗣️📚
-### Evidence-Informed Multimodal AI Speech, Language & Literacy Platform
+# LINGUA AI 🗣️🩺
+### Evidence-Informed Clinical & Support Platform for Speech, Language & Literacy Specialists
 
 [![Flutter](https://img.shields.io/badge/Flutter-3.x-02569B?logo=flutter&logoColor=white)](https://flutter.dev)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
 [![Python](https://img.shields.io/badge/Python-3.10+-3776AB?logo=python&logoColor=white)](https://python.org)
-[![Google Gemini](https://img.shields.io/badge/Google_Gemini-Multimodal_AI-8E75B2?logo=google&logoColor=white)](https://deepmind.google/technologies/gemini/)
 [![Material 3](https://img.shields.io/badge/Design_System-Material_3_Stitch-6750A4)](https://m3.material.io)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Tests Passing](https://img.shields.io/badge/Tests-96_Backend_%7C_222_Mobile-success)](https://github.com/DevanshKot09/Language)
+[![Tests Passing](https://img.shields.io/badge/Tests-18_Backend_%7C_126_Mobile-success)](https://github.com/DevanshKot09/Language)
+[![Analysis](https://img.shields.io/badge/Flutter_Analyze-0_issues-brightgreen)](https://flutter.dev)
 
 ---
 
 ## 📖 Table of Contents
 1. [Platform Overview & Mission](#-platform-overview--mission)
 2. [Clinical Grounding & Non-Diagnostic Notice](#-clinical-grounding--non-diagnostic-notice)
-3. [Core Pillars & Architectural Highlights](#-core-pillars--architectural-highlights)
-4. [System Architecture Diagram](#-system-architecture-diagram)
-5. [Deep Dive: How Everything Works](#-deep-dive-how-everything-works)
-   - [Multimodal AI & Speech Engine](#1-multimodal-ai--speech-engine)
-   - [Adaptive Dual-Track Learning Engine (DLD vs. Dyslexia)](#2-adaptive-dual-track-learning-engine-dld-vs-dyslexia)
-   - [Role-Based Access Control & Security Architecture](#3-role-based-access-control--security-architecture)
-   - [Cross-Role Collaboration & Consultation Engine](#4-cross-role-collaboration--consultation-engine)
-6. [Comprehensive End-to-End User Journeys](#-comprehensive-end-to-end-user-journeys)
-   - [Journey 1: First-Time Onboarding & Role Selection](#journey-1-first-time-onboarding--role-selection)
-   - [Journey 2: Authentication & Password Recovery Flow](#journey-2-authentication--password-recovery-flow)
-   - [Journey 3: Learner Experience (Screening to Mastery)](#journey-3-learner-experience-screening-to-mastery)
-   - [Journey 4: Parent Experience & Home Monitoring](#journey-4-parent-experience--home-monitoring)
-   - [Journey 5: Educator / Teacher Classroom Experience](#journey-5-educator--teacher-classroom-experience)
-   - [Journey 6: Specialist / Speech-Language Pathologist (SLP) Experience](#journey-6-specialist--speech-language-pathologist-slp-experience)
-7. [Repository File & Directory Structure](#-repository-file--directory-structure)
-8. [Comprehensive API Reference](#-comprehensive-api-reference)
-9. [Step-by-Step Local Setup & Execution Guide](#-step-by-step-local-setup--execution-guide)
+3. [The 11 Core Stitch-Designed Screens](#-the-11-core-stitch-designed-screens)
+4. [Step-by-Step User Journey & Workflow](#-step-by-step-user-journey--workflow)
+5. [System Architecture Diagram](#-system-architecture-diagram)
+6. [Repository File & Directory Structure](#-repository-file--directory-structure)
+7. [Comprehensive Backend API Reference](#-comprehensive-backend-api-reference)
+8. [Step-by-Step Local Setup & Execution Guide](#-step-by-step-local-setup--execution-guide)
    - [Prerequisites](#prerequisites)
    - [Backend Setup (FastAPI & Database)](#backend-setup-fastapi--database)
    - [Mobile Setup (Flutter Application)](#mobile-setup-flutter-application)
-   - [Environment Configuration (.env)](#environment-configuration-env)
-10. [Automated Testing & Verification](#-automated-testing--verification)
-11. [Data Privacy, Security & Consent Isolation](#-data-privacy-security--consent-isolation)
-12. [Roadmap & Contribution Guidelines](#-roadmap--contribution-guidelines)
-13. [License](#-license)
+9. [Automated Testing & Quality Verification](#-automated-testing--quality-verification)
+10. [Data Privacy, Security & Guardian Consent Isolation](#-data-privacy-security--guardian-consent-isolation)
+11. [License](#-license)
 
 ---
 
 ## 🌟 Platform Overview & Mission
 
-**LINGUA AI** is an advanced, evidence-informed speech, language, and literacy platform designed to address the critical developmental needs of individuals with **Developmental Language Disorder (DLD)** and **Dyslexia**. 
+**LINGUA AI** is an evidence-informed clinical coordination, guidance, and tele-practice platform engineered specifically for **Speech-Language Pathologists (SLPs)**, **Developmental Language Disorder (DLD) specialists**, and **Literacy/Dyslexia clinicians**.
 
-Children and learners navigating DLD and Dyslexia often face years of delays waiting for clinical evaluations ("wait-to-fail" paradigm). Traditional educational software frequently bundles all learning differences together, failing to distinguish between **oral language structural deficits** (DLD) and **phonological-orthographic decoding barriers** (Dyslexia).
+Traditional speech and language support is hindered by clinical silos, fragmented communication between homes, schools, and therapy clinics, and the lack of real-time clinical oversight tools during remote consultation sessions. 
 
-LINGUA AI bridges this divide by delivering:
-- **Tailored, condition-specific learning tracks** grounded in pedagogical research.
-- **Real-time multimodal acoustic and phonemic evaluation** powered by Google Gemini AI.
-- **A unified, four-role collaborative ecosystem** uniting Learners, Parents, Educators, and Speech-Language Specialists.
+LINGUA AI bridges these gaps by providing:
+- **Comprehensive Specialist Caseload & Milestone Tracking**: Unified dashboards tracking active learners, attendance, phonemic error markers, and practice frequency.
+- **Stitch-Accurate Live Support Session Tele-practice**: Interactive 1-on-1 live session tools with an active speech cadence pacer, clinical notes drawer, session timers, and real-time exercise controls.
+- **Multidisciplinary Support Circles**: Secure collaboration threads connecting Specialists, Parents, and Educators with guardian-consent security gates.
+- **Human-in-the-Loop AI Oversight**: Clinician review mechanisms for automated recommendations before any learning modifications reach learners.
 
 ---
 
 ## ⚠️ Clinical Grounding & Non-Diagnostic Notice
 
 > **IMPORTANT NON-DIAGNOSTIC NOTICE:**  
-> LINGUA AI is an **educational support, practice, and skill-monitoring tool**. It does **NOT** diagnose medical, neurological, or clinical disorders, nor does it generate formal diagnostic labels. All screening metrics, pronunciation confidence scores, and recommendation reports are intended to inform educational interventions and support clinical speech-language pathologists (SLPs), educators, and parents. Formal diagnoses must always be performed by licensed healthcare professionals and certified clinicians.
+> LINGUA AI is an **educational support, practice monitoring, and clinical coordination tool**. It does **NOT** diagnose medical, neurological, or clinical disorders, nor does it generate formal diagnostic labels. All analytics, session summaries, and AI recommendations are designed to assist certified clinicians, speech-language pathologists (SLPs), educators, and parents. Formal clinical diagnoses must always be performed by licensed healthcare professionals and certified clinical speech-language evaluators.
 
 ---
 
-## 💡 Core Pillars & Architectural Highlights
+## 📱 The 11 Core Stitch-Designed Screens
 
-1. **Distinct DLD & Dyslexia Tracks:**
-   - **DLD Track:** Concentrates on expressive/receptive syntax, morphology (tense markers, plurals), sentence formulation, vocabulary breadth, and narrative sequencing.
-   - **Dyslexia Track:** Focuses on phonemic segmentation, grapheme-phoneme correspondences, orthographic mapping, decoding fluency, and multi-syllabic reading passages.
-2. **Accessible, Stress-Free Design Language:**
-   - Built strictly with typography suited for readers with dyslexia (**Lexend** and **Inter**).
-   - Generous line spacing, high-contrast text, pastel background accents, and zero high-stimulus flickering.
-   - Auditory prompts with calm, encouragement-driven micro-interactions.
-3. **Multimodal AI Speech Feedback:**
-   - High-fidelity microphone capture with real-time waveform visualization.
-   - Acoustic confidence scoring and phoneme-level breakdown.
-   - Non-judgmental, scaffolded hints generated on-the-fly via Google Gemini 1.5.
-4. **Multi-Stakeholder Collaboration Hub:**
-   - Separate, purposeful workflows for **Learners**, **Parents**, **Teachers**, and **Specialists**.
-   - Real-time consultation chat threads, IEP goal alignment, classroom accommodation notes, and clinical caseload management.
+The LINGUA AI mobile client consists of 11 tightly integrated, Stitch-accurate screens:
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                             AUTHENTICATION FLOW                             │
+├─────────────────────┬─────────────────────┬─────────────────────────────────┤
+│ 1. SplashScreen     │ 2. WelcomeScreen    │ 3. LoginScreen                  │
+│    (/splash)        │    (/)              │    (/login)                     │
+│    • Session check  │    • Entry portal   │    • Stitch visual hierarchy    │
+│    • Auto-hydrate   │    • Get Started    │    • Email/password validation  │
+├─────────────────────┴─────────────────────┼─────────────────────────────────┤
+│ 4. SignupScreen (/signup)                 │ 5. ForgotPasswordScreen         │
+│    • Specialist registration form         │    (/forgot-password)           │
+│    • Role-scoped onboarding               │    • 6-digit cryptographic OTP  │
+└───────────────────────────────────────────┴─────────────────────────────────┘
+                                      │
+                                      ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                        SPECIALIST WORKSPACE & CLINIC                        │
+├───────────────────────────────────────────┬─────────────────────────────────┤
+│ 6. SpecialistDashboardScreen (/specialist)│ 7. SpecialistLearnerDetailScreen│
+│    • Caseload & Practice dual-tabs        │    (/specialist/learner)        │
+│    • Key metrics (8 assigned, 24 audio)   │    • Learner switcher (Child/10)│
+│    • Today's Schedule (Aarav M., Anaya P.)│    • 14-Day Streak & Engagement │
+│    • Quick Tools (Caseload, Booking)      │    • 1-on-1 Live Session CTA    │
+│    • AI Suggestions with Human Review     │    • Milestone Progress         │
+│    • Bottom Nav (Home, Caseload, etc.)    │    • Latest Clinician Reflection│
+├───────────────────────────────────────────┼─────────────────────────────────┤
+│ 8. SpecialistScheduleScreen               │ 9. SpecialistMessagesScreen     │
+│    (/specialist/schedule)                 │    (/specialist/messages)       │
+│    • Day/Week clinical calendar           │    • Search & unread filtering  │
+│    • Upcoming & completed appointments    │    • Pinned Aarav M. circle     │
+│    • "Schedule Support Session" modal     │    • Consent pending lock state │
+├───────────────────────────────────────────┼─────────────────────────────────┤
+│ 10. CollaborationChatScreen               │ 11. SpecialistLiveSessionScreen │
+│     (/collaboration/chat)                 │     (/specialist/live-session)  │
+│     • Real-time message thread            │     • Live tele-practice UI     │
+│     • Clinical resource attachments (PDF) │     • Speech Cadence Pacer      │
+│     • Learner profile & schedule shortcut │     • Live session notes drawer │
+│     • Guardian consent privacy banner     │     • Session completion recap  │
+└───────────────────────────────────────────┴─────────────────────────────────┘
+```
+
+### Detailed Screen Breakdown
+
+1. **`SplashScreen` (`/splash`)**: Initial launch gate that initializes secure storage, pre-caches design tokens, checks active session validity, and routes authenticated specialists directly to `/specialist`.
+2. **`WelcomeScreen` (`/`)**: High-contrast, brand-aligned introductory landing screen allowing users to proceed to sign in or create an account.
+3. **`LoginScreen` (`/login`)**: Full Stitch design featuring abstract brand artwork, email and password inputs, role-scoped credential validation, and password recovery routing.
+4. **`SignupScreen` (`/signup`)**: Clean registration screen with input validation, role assignment, and direct post-auth routing into the Specialist workspace.
+5. **`ForgotPasswordScreen` (`/forgot-password`)**: Multi-step recovery workflow validating user emails and generating 6-digit one-time password (OTP) verifications.
+6. **`SpecialistDashboardScreen` (`/specialist`)**:
+   - **Greeting Bar**: Displays current specialist credentials (e.g. Dr. Maya, SLP), notification modal, and profile bottom sheet.
+   - **Metrics Hub**: Active caseload counter and daily audio turn logs.
+   - **Today's Schedule Card**: Interactive cards showing scheduled patient sessions (e.g., Aarav M. at 10:30 AM, Anaya P. at 2:00 PM).
+   - **Quick Tools**: Fast shortcuts to switch to Caseload view or trigger the session booking modal.
+   - **AI Suggestions**: Human-in-the-loop review card for AI-suggested pacing exercises with Approve/Modify/Reject oversight.
+   - **Caseload Tab**: Real-time search filter and learner cards with baseline status and track badges (DLD vs Dyslexia).
+7. **`SpecialistLearnerDetailScreen` (`/specialist/learner`)**:
+   - **Identity Card**: Age band, linked parent contact, practice streak, and clinical status.
+   - **Learner Switcher**: Toggle seamlessly between child and adult patient dossiers.
+   - **Action Grid**: Primary vibrant CTA for *Start Session* (tele-practice), *Schedule*, and *Guidance Chat*.
+   - **Milestone Progress**: Visual progress bars across Phonemic Awareness, Reading Fluency & Pacing, and Syllable Segmentation.
+   - **Latest Reflection**: Clinician quote box with clinical notes and date tracking.
+8. **`SpecialistScheduleScreen` (`/specialist/schedule`)**: Day, week, and list view of upcoming consultations, session durations, and instant appointment booking modals.
+9. **`SpecialistMessagesScreen` (`/specialist/messages`)**: Dedicated communications hub displaying team support circles. Unread count pills, pinned threads, and consent-gated lock notifications.
+10. **`CollaborationChatScreen` (`/collaboration/chat`)**: Multi-stakeholder chat thread supporting text exchanges, file attachments (Phonics Pacing Cards, worksheets), message delivery states, and quick access to learner dossiers.
+11. **`SpecialistLiveSessionScreen` (`/specialist/live-session`)**: Full-screen tele-practice interface matching Stitch specifications:
+    - Learner identity and real-time session duration stopwatch.
+    - Media controls: Microphone toggle, Camera toggle, Cadence Pacer, Clinical Notes drawer, and End Session.
+    - Speech Cadence Pacer: Interactive tempo visualizer with adjustable beats-per-minute (BPM) to assist stuttering, cluttering, or rapid speech.
+    - Post-session completion state: Duration recap, focus area summary, and clinical session notes logger.
+
+---
+
+## 🗺️ Step-by-Step User Journey & Workflow
+
+```
+[ Launch App ] 
+      │
+      ▼
+[ Splash Screen ] ──(Has Valid Session?)──► [ Specialist Dashboard ]
+      │ (No)                                         │
+      ▼                                              │
+[ Welcome Screen ]                                   │
+      │                                              │
+      ├───────────────────────┬──────────────────────┤
+      ▼                       ▼                      │
+[ Login Screen ]       [ Signup Screen ]             │
+      │                       │                      │
+      └───────────┬───────────┘                      │
+                  ▼                                  │
+    [ Authenticated Specialist ] ◄───────────────────┘
+                  │
+        ┌─────────┴────────────────────────┐
+        ▼                                  ▼
+[ Specialist Dashboard ]          [ Caseload Tab ]
+        │                                  │
+        ├──────────────────────┐           ▼
+        ▼                      ▼     [ Learner Profile ]
+[ Schedule Screen ]    [ Messages Hub ]    │ (Aarav M.)
+        │                      │           ├─────────────────────┐
+        │                      ▼           ▼                     ▼
+        │             [ Chat Thread ]  [ Guidance Chat ] [ Start Live Session ]
+        │                      │           │                     │
+        └──────────────────────┴───────────┴─────────────────────▼
+                                                    [ Live Tele-Practice ]
+                                                    • Cadence Pacer
+                                                    • Live Notes Drawer
+                                                    • Session Completed Recap
+```
+
+### Typical Specialist Workflow
+1. **Login & Overview**: Log in as a Speech-Language Specialist. The Dashboard immediately displays today's agenda, caseload alerts, and pending AI recommendations.
+2. **Reviewing Caseload**: Tap the **Caseload** tab or search for a student (e.g., Aarav M.). Inspect their active track (Spoken Language - DLD), current 14-day practice streak, and linked parent contact.
+3. **Clinical Consultation**: Open **Guidance Chat** with the student's multidisciplinary team (Parent Priya M. and Teacher Eleanor D.) to share pacing worksheets.
+4. **Conducting a Live Session**: Launch **Start Session**. The app transitions to the **Live Support Session** interface. Use the integrated **Cadence Pacer** to guide verbal rhythm and log observations in the **Clinical Notes** modal.
+5. **Session Wrap-Up**: Conclude the session to review the summary statistics (duration, focus area, and observation notes).
 
 ---
 
@@ -86,175 +177,54 @@ LINGUA AI bridges this divide by delivering:
 ```mermaid
 flowchart TD
     subgraph Client ["Flutter Mobile Application (Dart 3.x)"]
-        UI["Presentation Layer\n(Material 3 / Stitch Design)"]
-        BLoC["State Management Layer\n(Riverpod 2.x Providers)"]
-        Repo["Data & Repository Layer\n(Auth, Baseline, Speech, Collab)"]
-        AudioRec["Audio Engine\n(Record & JustAudio Streamer)"]
-        UI --> BLoC
-        BLoC --> Repo
-        Repo --> AudioRec
+        UI["Presentation Layer\n(11 Stitch Screens & Design Tokens)"]
+        State["State Management Layer\n(Riverpod 2.x StateNotifier & Providers)"]
+        Repo["Data Repository Layer\n(AuthRepository, CollaborationRepository)"]
+        NetClient["Network Layer\n(Custom ApiClient with Auth Interceptor)"]
+        
+        UI --> State
+        State --> Repo
+        Repo --> NetClient
     end
 
-    subgraph Gateway ["Network & Security Layer"]
-        JWT["OAuth2 / JWT Bearer Auth"]
-        RBAC["Role-Based Access Control\n(Learner | Parent | Teacher | Specialist)"]
-        Consent["Parent Consent & Privacy Guard"]
+    subgraph BackendGateway ["FastAPI Core Services (Python 3.10+)"]
+        Router["API Gateway (/api/v1)"]
+        AuthModule["Auth & Security Router (/api/v1/auth)"]
+        SpecialistModule["Specialist Router (/api/v1/specialist)"]
+        RelModule["Relationships Router (/api/v1/relationships)"]
+        ProfileModule["Profile Router (/api/v1/profile)"]
+        
+        Router --> AuthModule
+        Router --> SpecialistModule
+        Router --> RelModule
+        Router --> ProfileModule
     end
 
-    subgraph Backend ["FastAPI Core Services (Python 3.10+)"]
-        Router["FastAPI REST & WS Endpoints (/api/v1)"]
-        AuthSvc["Auth & Security Service"]
-        LearnSvc["Adaptive Learning & Path Service"]
-        CollabSvc["Collaboration & Caseload Service"]
-        AISvc["Multimodal AI & Speech Service"]
-        MailSvc["SMTP Mailer Service\n(Gmail TLS / 6-Digit OTP)"]
-        DB[(SQLAlchemy ORM\nSQLite / PostgreSQL)]
+    subgraph SecurityServices ["Security, RBAC & Consent"]
+        JWT["JWT Bearer Token Validator"]
+        RBAC["Role-Based Guard (Specialist Scoped)"]
+        Consent["Guardian Consent Isolation Gate"]
+        Mailer["Gmail SMTP Service (Cryptographic 6-Digit OTP)"]
+        
+        AuthModule --> JWT
+        AuthModule --> Mailer
+        SpecialistModule --> RBAC
+        SpecialistModule --> Consent
     end
 
-    subgraph AI ["AI & External Services"]
-        Gemini["Google Gemini 1.5 Multimodal API\n(Phonemic & Acoustic Evaluation)"]
-        SMTP["Gmail SMTP Server\n(Encrypted Auth Codes)"]
+    subgraph DataStorage ["Data & Persistence Layer"]
+        ORM["SQLAlchemy ORM Models\n(User, Profile, Relationship, Goal, Lesson)"]
+        DB[(SQLite / PostgreSQL Database)]
+        Alembic["Alembic Schema Migrations"]
+        
+        SpecialistModule --> ORM
+        AuthModule --> ORM
+        ORM --> DB
+        Alembic -.-> DB
     end
 
-    Repo -->|HTTPS / WSS| Gateway
-    Gateway --> Router
-    Router --> AuthSvc
-    Router --> LearnSvc
-    Router --> CollabSvc
-    Router --> AISvc
-    AuthSvc --> DB
-    LearnSvc --> DB
-    CollabSvc --> DB
-    AuthSvc --> MailSvc
-    MailSvc --> SMTP
-    AISvc --> Gemini
+    NetClient -->|HTTPS REST| Router
 ```
-
----
-
-## 🔬 Deep Dive: How Everything Works
-
-### 1. Multimodal AI & Speech Engine
-- **Audio Capture & Streaming:** The client uses an audio recorder configured for mono 16kHz WAV/PCM audio streaming. The raw audio is pre-processed with noise suppression.
-- **Waveform Visualizer:** During active recording, amplitude samples feed a reactive waveform widget, providing visual feedback to young or sensory-sensitive learners.
-- **Phoneme Analysis:** The backend accepts base64 audio data and passes it through an acoustic analysis pipeline paired with Google Gemini multimodal inference.
-- **Scaffolded AI Hints:** If a learner struggles with a word (e.g., omitting the `/s/` blend in "spoon"), the engine doesn't simply report a failure; it analyzes the specific phonemic omission and generates an encouraging, age-appropriate hint (e.g., *"Try holding out your snake sound 'ssss' before saying 'poon'!"*).
-
-### 2. Adaptive Dual-Track Learning Engine (DLD vs. Dyslexia)
-- **Taxonomy Mapping:** Every exercise is mapped to standardized skill taxonomy nodes:
-  - *DLD Taxonomy:* `syntax_sentence_structure`, `morphology_inflections`, `vocabulary_expressive`, `narrative_sequencing`.
-  - *Dyslexia Taxonomy:* `phonological_blending`, `orthographic_mapping`, `decoding_cvc`, `fluency_passage_reading`.
-- **Mastery Locks:** Learners navigate an interactive node-based roadmap. Unlocking subsequent nodes requires demonstrating consistent accuracy (>80%) across multiple practice intervals.
-- **Adaptive Difficulty:** If consecutive errors occur, the backend adjusts difficulty parameters dynamically without triggering learner frustration.
-
-### 3. Role-Based Access Control & Security Architecture
-- Users belong to one of four verified roles:
-  - `learner`: Can complete exercises, take baseline screenings, earn badges, and practice speech.
-  - `parent`: Can link child profiles, review daily activity, assign home practice, and message teachers/specialists.
-  - `teacher`: Can monitor assigned classroom rosters, track IEP milestones, and review classroom accommodation strategies.
-  - `specialist`: Can access assigned clinical caseloads, review detailed articulation analytics, create personalized clinical interventions, and engage in consultation threads.
-- All tokens are signed with HMAC-SHA256 and stored using secure hardware storage (`flutter_secure_storage` on mobile).
-
-### 4. Cross-Role Collaboration & Consultation Engine
-- **Caseload Management:** Specialists can search and filter their caseload by risk level, condition track, or attendance.
-- **Consultation Chat Threads:** Direct, isolated real-time messaging between Parents, Teachers, and Specialists. All messages are stamped with role tags to ensure clinical clarity.
-- **Intervention Plan Approval:** Specialists can draft and push custom clinical exercises to a student's learning queue. Parents receive notification and can review the planned interventions.
-
----
-
-## 🗺️ Comprehensive End-to-End User Journeys
-
-```
-                    ┌────────────────────────────┐
-                    │  App Launch / Splash Screen │
-                    └──────────────┬─────────────┘
-                                   │
-                                   ▼
-                    ┌────────────────────────────┐
-                    │ 3-Screen Onboarding Flow   │
-                    │ (DLD & Dyslexia Overview)  │
-                    └──────────────┬─────────────┘
-                                   │
-                                   ▼
-                    ┌────────────────────────────┐
-                    │ Role Selection & Portal    │
-                    │ Learner | Parent | Teach | │
-                    │ Specialist                 │
-                    └──────────────┬─────────────┘
-                                   │
-         ┌─────────────────────────┴─────────────────────────┐
-         ▼                                                   ▼
-┌─────────────────────────┐                         ┌─────────────────────────┐
-│     Create Account      │                         │  Welcome Back / Sign In │
-│   (Role-Specific Meta)  │                         │ (Remember Me + OTP)     │
-└────────────┬────────────┘                         └────────────┬────────────┘
-             └─────────────────────────┬─────────────────────────┘
-                                       │
-                                       ▼
-                       ┌──────────────────────────────┐
-                       │ Authenticated Role Dashboard │
-                       └──────────────┬───────────────┘
-         ┌─────────────────┬──────────┴──────────┬──────────────────┐
-         ▼                 ▼                     ▼                  ▼
-┌─────────────────┐ ┌───────────────┐  ┌─────────────────┐ ┌────────────────┐
-│ Learner Home    │ │ Parent Portal │  │ Teacher Portal  │ │ Specialist Hub │
-│ • Baseline Quiz │ │ • Progress    │  │ • Class Roster  │ │ • Caseload     │
-│ • Speech Lab    │ │ • Home Assign │  │ • IEP Tracking  │ │ • Articulation │
-│ • Learning Path │ │ • SLP Chat    │  │ • Accommodation │ │ • Custom Plan  │
-│ • Badges & XP   │ │ • Weekly Rpt  │  │ • Direct Notes  │ │ • Consult Chat │
-└─────────────────┘ └───────────────┘  └─────────────────┘ └────────────────┘
-```
-
-### Journey 1: First-Time Onboarding & Role Selection
-1. **Splash Screen:** Welcomes the user with a fluid animated logo, pre-caches design tokens, and checks for stored credentials.
-2. **3-Screen Educational Onboarding:**
-   - *Screen 1: Tailored Learning:* Introduces how LINGUA AI personalizes pathways for both DLD and Dyslexia.
-   - *Screen 2: Speech & AI Feedback:* Highlights real-time speech evaluation with non-judgmental guidance.
-   - *Screen 3: Unified Collaboration:* Demonstrates how learners, families, educators, and clinicians work together.
-3. **Role Selection:** The user designates their role (`Learner`, `Parent`, `Teacher`, or `Specialist`).
-
-### Journey 2: Authentication & Password Recovery Flow
-1. **Sign Up:** User inputs Full Name, Email, Password, Age Group (for learners), and Role.
-2. **Sign In ("Welcome Back"):**
-   - Clean, modern layout designed according to Stitch specifications.
-   - Quick-toggle for password visibility and "Remember Me" checkbox for token persistence.
-3. **Forgot Password with Gmail SMTP Integration:**
-   - User enters registered email.
-   - The backend validates the user and dispatches an authentic 6-digit cryptographic OTP via Gmail SMTP TLS.
-   - User inputs the 6-digit OTP on a dedicated code-entry screen.
-   - Upon verification, the user securely resets their password.
-
-### Journey 3: Learner Experience (Screening to Mastery)
-1. **Baseline Screening (Day 1):**
-   - Takes a 5-10 minute age-adaptive questionnaire and listening task.
-   - Measures expressive vocabulary, phonological awareness, and syntax formulation.
-   - Assigns a recommended starting track (`DLD`, `Dyslexia`, or `Combined Support`).
-2. **Daily Practice Dashboard:**
-   - Displays daily streak counter, active goals (e.g., "Complete 2 phonics modules"), and current XP.
-3. **Interactive Speech Lab:**
-   - Prompts the learner with an auditory target word or sentence.
-   - Learner taps the microphone button; live audio waves react to their voice.
-   - AI evaluates the pronunciation, highlights correct phonemes, and offers scaffolding hints.
-4. **Mastery & Celebrations:**
-   - Earning mastery points unlocks themed badges, milestones, and new difficulty tiers.
-
-### Journey 4: Parent Experience & Home Monitoring
-1. **Overview Dashboard:** View linked children, daily practice time, and current skill mastery.
-2. **Weekly Progress Insights:** Bar graphs showing phoneme accuracy trends and vocabulary expansion over time.
-3. **Home Practice Assignment:** Parents can trigger 10-minute targeted home sessions recommended by the specialist.
-4. **Direct Messaging:** Direct, secure chat thread with the child's teacher and speech therapist.
-
-### Journey 5: Educator / Teacher Classroom Experience
-1. **Class Roster:** Overview of all students requiring speech or literacy accommodations.
-2. **Accommodation Guide:** Practical classroom recommendations (e.g., using visual timers, breaking multi-step spoken instructions into chunks, dyslexia-friendly fonts on printouts).
-3. **IEP Target Alignment:** Track progress against official educational targets and log observations.
-4. **Collaborative Notes:** Share updates with the specialist before parent-teacher conferences.
-
-### Journey 6: Specialist / Speech-Language Pathologist (SLP) Experience
-1. **Caseload Management:** Real-time roster sorted by urgency, track, and adherence.
-2. **Phoneme & Speech Articulation Analytics:** Deep analytics showing specific phoneme substitutions (e.g., `/r/` gliding or final consonant deletion).
-3. **Custom Intervention Plans:** Review AI-generated intervention recommendations, modify exercise parameters, and push updates directly to the learner's app.
-4. **Direct Consultations:** Conduct text-based consultation threads with parents and teachers.
 
 ---
 
@@ -262,143 +232,124 @@ flowchart TD
 
 ```
 Lingual AI/
-├── backend/                              # FastAPI Async Python Backend
+├── backend/                              # FastAPI Python Backend
 │   ├── alembic/                          # Database schema migration scripts
 │   ├── app/
-│   │   ├── ai/                           # Gemini AI integration, audio decoders, prompt templates
-│   │   │   ├── gemini_client.py          # Gemini API wrapper with rate-limiting & fallback
-│   │   │   ├── prompt_templates.py       # Clinical scaffolding prompts
-│   │   │   └── speech_analyzer.py        # Phoneme & acoustic analysis engine
-│   │   ├── api/v1/endpoints/             # REST API routes
-│   │   │   ├── auth.py                   # Sign-up, sign-in, OTP verification, password reset
-│   │   │   ├── baseline.py               # Baseline screening assessment endpoints
-│   │   │   ├── learning.py               # Exercises, tracks, taxonomy, mastery nodes
-│   │   │   ├── speech.py                 # Audio upload, live speech assessment
-│   │   │   ├── specialist.py             # Specialist caseload, clinical interventions, chat
-│   │   │   ├── teacher.py                # Teacher classroom roster, accommodations, IEPs
-│   │   │   ├── parent.py                 # Parent dashboard, child progress, assignments
-│   │   │   ├── progress.py               # Analytics, streaks, achievements, goals
-│   │   │   └── ai.py                     # AI recommendation endpoints & safety guardrails
-│   │   ├── core/                         # Configuration, JWT security, email service
-│   │   │   ├── config.py                 # Pydantic BaseSettings (.env loading)
-│   │   │   ├── security.py               # Password hashing (Argon2 / BCrypt), JWT tokens
-│   │   │   ├── mail.py                   # SMTP mail sender with TLS & HTML email templates
-│   │   │   └── database.py               # SQLAlchemy async engine & sessionmaker
-│   │   ├── models/                       # SQLAlchemy Database Models
-│   │   │   ├── user.py                   # User entity & role definitions
-│   │   │   ├── baseline.py               # Screening submissions & snapshots
-│   │   │   ├── exercise.py               # Learning exercises & curriculum nodes
-│   │   │   ├── speech_attempt.py         # Audio submissions & phonemic evaluation logs
-│   │   │   ├── collaboration.py          # Caseload links, chat threads, IEP goals
-│   │   │   └── progress.py               # Streaks, badges, goal records
-│   │   ├── repositories/                 # Data access layer for database queries
+│   │   ├── api/                          # API routing & endpoints
+│   │   │   ├── deps.py                   # Dependency injection (Auth, DB, RBAC)
+│   │   │   └── v1/
+│   │   │       ├── endpoints/
+│   │   │       │   ├── auth.py           # Registration, login, OTP verification
+│   │   │       │   ├── profile.py        # Specialist & user profile endpoints
+│   │   │       │   ├── relationships.py  # Collaborator invitations & acceptance
+│   │   │       │   └── specialist.py     # Caseload, dossier, conversations, AI reviews
+│   │   │       └── router.py             # Active API v1 endpoint aggregator
+│   │   ├── core/                         # Configuration, JWT security, database
+│   │   │   ├── config.py                 # Pydantic v2 application settings
+│   │   │   ├── database.py               # SQLAlchemy database session & engine
+│   │   │   ├── mail.py                   # SMTP mailer for OTP verification
+│   │   │   └── security.py               # Password hashing & JWT token encoding
+│   │   ├── models/                       # SQLAlchemy Database Models (Preserved)
+│   │   │   ├── achievement.py            # Achievement metadata
+│   │   │   ├── ai.py                     # AI recommendation records
+│   │   │   ├── collaboration.py          # Relationships, invitations, conversations
+│   │   │   ├── goal.py                   # Educational support goals
+│   │   │   ├── learning.py               # Lessons & exercises schema
+│   │   │   ├── profile.py                # User profiles & clinical focus
+│   │   │   ├── skill.py                  # Standardized skill taxonomy
+│   │   │   └── user.py                   # User entity & role definitions
+│   │   ├── repositories/                 # Data access layer
+│   │   │   ├── goal_repository.py        # Clinical goals data access
+│   │   │   └── user_repository.py        # User & identity data access
 │   │   ├── schemas/                      # Pydantic validation schemas
-│   │   └── services/                     # Business logic layer
-│   │       ├── auth_service.py           # Registration, authentication, OTP lifecycle
-│   │       ├── baseline_service.py       # Adaptive questionnaire evaluation
-│   │       ├── collaboration_service.py  # Caseload, role isolation, message routing
-│   │       └── speech_service.py         # Audio processing & AI evaluation pipeline
-│   ├── tests/                            # Comprehensive Pytest test suite (96 tests)
+│   │   │   ├── auth.py                   # Auth requests & response models
+│   │   │   ├── collaboration.py          # Caseload, conversation & chat schemas
+│   │   │   └── user.py                   # User profile validation
+│   │   ├── services/                     # Business logic services
+│   │   │   ├── auth_service.py           # Registration, login & OTP flow
+│   │   │   ├── collaboration_service.py  # Caseload authorization & messaging
+│   │   │   └── profile_service.py        # Profile updates & retrieval
+│   │   └── main.py                       # FastAPI application factory
+│   ├── tests/                            # Backend Pytest test suite (18 tests)
 │   └── requirements.txt                  # Python dependencies
 │
-├── mobile/                               # Cross-Platform Flutter Client
+├── mobile/                               # Flutter Mobile Client
 │   ├── lib/
 │   │   ├── app/
-│   │   │   └── router/app_router.dart    # GoRouter configuration & route guards
+│   │   │   ├── providers/                # Session, storage, network providers
+│   │   │   │   ├── auth_provider.dart    # Auth state bindings
+│   │   │   │   ├── network_provider.dart # Dio / ApiClient bindings
+│   │   │   │   └── session_provider.dart # User session state & logout logic
+│   │   │   └── router/app_router.dart    # Route definitions & guards
 │   │   ├── core/
-│   │   │   ├── network/                  # Dio HTTP client, auth interceptor, endpoints
-│   │   │   ├── theme/                    # Material 3 theme, Lexend typography, color palettes
-│   │   │   └── widgets/                  # Reusable accessible buttons, cards, waveforms
+│   │   │   ├── errors/                   # Unified failure & exception mapping
+│   │   │   ├── network/                  # ApiClient, ApiEndpoints, error handlers
+│   │   │   └── widgets/                  # LinguaButton, cards, custom headers
 │   │   ├── features/
-│   │   │   ├── welcome/                  # Animated splash screen
-│   │   │   ├── onboarding/               # 3-Screen interactive onboarding tour
-│   │   │   ├── role_selection/           # Role picker (Learner, Parent, Teacher, Specialist)
-│   │   │   ├── authentication/           # Login, Signup, Forgot Password, OTP verification
-│   │   │   ├── baseline/                 # Screening questionnaire & skill snapshot screens
-│   │   │   ├── learner_home/             # Daily learner hub, streak banner, quick practice
-│   │   │   ├── learning/                 # Dynamic exercise player & audio player
-│   │   │   ├── learning_path/            # Visual mastery node roadmap
-│   │   │   ├── speech/                   # Speech lab, microphone recorder, phoneme feedback
-│   │   │   ├── progress/                 # Analytics charts, goal manager, badge showcase
-│   │   │   ├── collaboration/            # Specialist, Teacher, Parent dashboards & chat
-│   │   │   │   ├── presentation/screens/
-│   │   │   │   │   ├── specialist_dashboard_screen.dart
-│   │   │   │   │   ├── specialist_messages_screen.dart
-│   │   │   │   │   ├── collaboration_chat_screen.dart
-│   │   │   │   │   ├── teacher_dashboard_screen.dart
-│   │   │   │   │   └── parent_dashboard_screen.dart
-│   │   │   │   ├── data/collaboration_repository.dart
-│   │   │   │   └── domain/models/collaboration_models.dart
-│   │   │   └── settings/                 # Accessibility settings, audio sensitivity
-│   │   └── main.dart                     # Flutter application entrypoint
-│   ├── test/                             # Flutter Unit & Widget tests (222 tests)
-│   └── pubspec.yaml                      # Flutter dependencies & asset declarations
+│   │   │   ├── authentication/           # LoginScreen, SignupScreen, ForgotPasswordScreen
+│   │   │   ├── collaboration/            # Specialist Workspace & Clinic
+│   │   │   │   ├── application/          # collaboration_providers.dart
+│   │   │   │   ├── data/                 # collaboration_repository.dart
+│   │   │   │   ├── domain/models/        # collaboration_models.dart
+│   │   │   │   └── presentation/screens/
+│   │   │   │       ├── specialist_dashboard_screen.dart
+│   │   │   │       ├── specialist_learner_detail_screen.dart
+│   │   │   │       ├── specialist_schedule_screen.dart
+│   │   │   │       ├── specialist_messages_screen.dart
+│   │   │   │       ├── collaboration_chat_screen.dart
+│   │   │   │       └── specialist_live_session_screen.dart
+│   │   │   └── welcome/                  # SplashScreen, WelcomeScreen
+│   │   └── main.dart                     # Flutter entrypoint
+│   ├── test/                             # Mobile test suite (126 tests)
+│   └── pubspec.yaml                      # Lean Flutter dependencies (zero audio bloat)
 │
-├── shared/                               # Common Taxonomy & Design Assets
-│   ├── architecture/                     # Clinical skill taxonomies & safety boundary docs
-│   └── design_tokens/                    # Standardized color hexes, typography scales, radii
-│
-└── brain/                                # Research documentation & architectural ADRs
+└── shared/                               # Cross-cutting design tokens & models
 ```
 
 ---
 
-## 📡 Comprehensive API Reference
+## 📡 Comprehensive Backend API Reference
 
 ### 1. Authentication & Identity (`/api/v1/auth`)
 | Method | Endpoint | Description | Auth Required |
 |---|---|---|---|
-| `POST` | `/api/v1/auth/signup` | Register a new user with role and metadata | No |
-| `POST` | `/api/v1/auth/login` | Authenticate with email/password; returns JWT | No |
-| `POST` | `/api/v1/auth/forgot-password` | Generate & send 6-digit OTP via Gmail SMTP | No |
-| `POST` | `/api/v1/auth/verify-otp` | Validate 6-digit email OTP | No |
+| `POST` | `/api/v1/auth/signup` | Register a new user (with specialist role metadata) | No |
+| `POST` | `/api/v1/auth/login` | Authenticate with email/password; returns JWT access token | No |
+| `POST` | `/api/v1/auth/forgot-password` | Generate & dispatch 6-digit cryptographic OTP via Gmail SMTP | No |
+| `POST` | `/api/v1/auth/verify-otp` | Validate submitted 6-digit OTP code | No |
 | `POST` | `/api/v1/auth/reset-password` | Set new password using verified OTP token | No |
-| `GET` | `/api/v1/auth/me` | Fetch authenticated user profile & permissions | Yes |
+| `GET` | `/api/v1/auth/me` | Fetch active user credentials and verified role permissions | Yes |
 
-### 2. Baseline Screening (`/api/v1/baseline`)
-| Method | Endpoint | Description | Auth Required |
-|---|---|---|---|
-| `GET` | `/api/v1/baseline/questions` | Get age-adaptive screening questions | Yes |
-| `POST` | `/api/v1/baseline/submit` | Submit screening responses and get track assignment | Yes |
-| `GET` | `/api/v1/baseline/summary/{id}` | Retrieve skill snapshot and performance metrics | Yes |
-
-### 3. Learning & Adaptive Curriculum (`/api/v1/learning`)
-| Method | Endpoint | Description | Auth Required |
-|---|---|---|---|
-| `GET` | `/api/v1/learning/tracks` | List available tracks (`dld`, `dyslexia`) | Yes |
-| `GET` | `/api/v1/learning/path/{track_id}` | Fetch node-based progression roadmap | Yes |
-| `GET` | `/api/v1/learning/exercise/{id}` | Fetch exercise content, targets, and media | Yes |
-| `POST` | `/api/v1/learning/exercise/submit` | Submit exercise answers and update mastery score | Yes |
-
-### 4. Multimodal Speech & AI Assessment (`/api/v1/ai` & `/api/v1/speech`)
-| Method | Endpoint | Description | Auth Required |
-|---|---|---|---|
-| `POST` | `/api/v1/speech/evaluate` | Upload audio waveform; returns phoneme score & hints | Yes |
-| `POST` | `/api/v1/ai/scaffold-hint` | Request an adaptive hint based on prior mistakes | Yes |
-| `GET` | `/api/v1/ai/recommendations` | Get personalized exercise recommendations | Yes |
-
-### 5. Multi-Stakeholder Collaboration (`/api/v1/specialist`, `/api/v1/teacher`, `/api/v1/parent`)
+### 2. Specialist Workspace & Tele-practice (`/api/v1/specialist`)
 | Method | Endpoint | Description | Role Required |
 |---|---|---|---|
-| `GET` | `/api/v1/specialist/caseload` | List assigned learners, status, and condition | `specialist` |
-| `GET` | `/api/v1/specialist/caseload/{id}/analytics` | Detailed phonemic articulation error metrics | `specialist` |
-| `POST` | `/api/v1/specialist/interventions/assign` | Push custom clinical exercises to learner | `specialist` |
-| `GET` | `/api/v1/specialist/conversations` | List consultation chat threads | `specialist` |
-| `POST` | `/api/v1/specialist/conversations/{id}/messages` | Send message in consultation chat | `specialist` |
-| `GET` | `/api/v1/teacher/classroom-roster` | List students with classroom accommodations | `teacher` |
-| `POST` | `/api/v1/teacher/iep-goals/update` | Update status of IEP goal milestones | `teacher` |
-| `GET` | `/api/v1/parent/child-summary` | Retrieve child daily progress, goals, and streaks | `parent` |
+| `GET` | `/api/v1/specialist` | List all verified specialists available for collaboration | Any Auth |
+| `GET` | `/api/v1/specialist/caseload` | Retrieve active caseload learners, baseline status & risk metrics | `specialist` |
+| `GET` | `/api/v1/specialist/learners/{id}` | Fetch clinical dossier, progress metrics & support goals | `specialist` |
+| `POST` | `/api/v1/specialist/learners/{id}/goals` | Create a clinical learning-support goal for a learner | `specialist` |
+| `GET` | `/api/v1/specialist/learners/{id}/ai-recommendations` | List pending AI recommendations for clinical oversight | `specialist` |
+| `PUT` | `/api/v1/specialist/ai-recommendations/{id}` | Approve, modify, or reject AI-generated recommendations | `specialist` |
+| `GET` | `/api/v1/specialist/conversations` | List support circles with unread counts and consent status | `specialist` |
+| `GET` | `/api/v1/specialist/conversations/{id}/messages` | Fetch full message thread with attachments | `specialist` |
+| `POST` | `/api/v1/specialist/conversations/{id}/messages` | Send guidance message into clinical conversation thread | `specialist` |
+
+### 3. Relationships & Consent (`/api/v1/relationships`)
+| Method | Endpoint | Description | Auth Required |
+|---|---|---|---|
+| `GET` | `/api/v1/relationships` | Retrieve active and pending relationships | Yes |
+| `POST` | `/api/v1/relationships/invitations` | Issue collaboration invitation with permission scopes | Yes |
+| `POST` | `/api/v1/relationships/invitations/accept` | Accept an invitation token to activate collaboration | Yes |
+| `DELETE` | `/api/v1/relationships/{id}` | Revoke relationship and immediately terminate data access | Yes |
 
 ---
 
 ## 🛠️ Step-by-Step Local Setup & Execution Guide
 
 ### Prerequisites
-- **Python:** 3.10 or higher
-- **Flutter SDK:** 3.24 or higher
+- **Python**: 3.10 or higher
+- **Flutter SDK**: 3.24 or higher
 - **Git**
-- **Google Gemini API Key:** Obtain from [Google AI Studio](https://aistudio.google.com/)
-- **Gmail Account & App Password:** For testing automated OTP email verification
+- **Gmail Account & App Password**: For OTP email verification
 
 ---
 
@@ -427,22 +378,19 @@ Lingual AI/
    pip install -r requirements.txt
    ```
 
-4. **Configure Environment Variables:**
+4. **Configure Environment Variables (`.env`):**
    Create a `.env` file in the `backend/` directory:
    ```env
    PROJECT_NAME="LINGUA AI"
    ENVIRONMENT="development"
    API_V1_STR="/api/v1"
-   SECRET_KEY="your-super-secret-jwt-signing-key"
+   SECRET_KEY="your-jwt-secret-key-at-least-32-chars-long"
    ACCESS_TOKEN_EXPIRE_MINUTES=1440
 
    # Database
-   DATABASE_URL="sqlite+aiosqlite:///./lingua_ai.db"
+   DATABASE_URL="sqlite:///./lingua_ai.db"
 
-   # Google Gemini AI
-   GEMINI_API_KEY="your-gemini-api-key-here"
-
-   # Email Service (Gmail SMTP for 6-Digit OTP Delivery)
+   # Email Service (Gmail SMTP for 6-digit OTP delivery)
    SMTP_HOST="smtp.gmail.com"
    SMTP_PORT=587
    SMTP_TLS=True
@@ -452,12 +400,12 @@ Lingual AI/
    EMAIL_FROM_NAME="LINGUA AI Support"
    ```
 
-5. **Run Database Migrations:**
+5. **Run database migrations:**
    ```bash
    alembic upgrade head
    ```
 
-6. **Start the FastAPI Server:**
+6. **Start the FastAPI backend server:**
    ```bash
    uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
    ```
@@ -478,81 +426,66 @@ Lingual AI/
    flutter pub get
    ```
 
-3. **Configure API Endpoints:**
-   - In `lib/core/network/api_endpoints.dart`, set `baseUrl`:
-     - **Android Emulator:** `http://10.0.2.2:8000/api/v1`
-     - **iOS Simulator / Desktop / Web:** `http://localhost:8000/api/v1`
-     - **Physical Device:** `http://<YOUR_LOCAL_IP>:8000/api/v1`
+3. **Configure API Endpoint:**
+   Ensure `lib/core/network/api_endpoints.dart` points to your active server:
+   - **Android Emulator**: `http://10.0.2.2:8000/api/v1`
+   - **Windows Desktop / Chrome / iOS Simulator**: `http://localhost:8000/api/v1`
+   - **Physical Device**: `http://<YOUR_LOCAL_IP>:8000/api/v1`
 
-4. **Run the Application:**
+4. **Run the Flutter Application:**
    ```bash
    # Run on connected device or simulator
    flutter run
 
-   # Or specify target
-   flutter run -d chrome        # Web
+   # Or target specific platforms
    flutter run -d windows       # Windows Desktop
+   flutter run -d chrome        # Web Browser
    flutter run -d emulator-5554 # Android Emulator
    ```
 
 ---
 
-## 🧪 Automated Testing & Verification
+## 🧪 Automated Testing & Quality Verification
 
-The project is backed by comprehensive, multi-layer automated test suites across both backend and mobile codebases.
+The platform maintains automated test suites with 100% pass rates across both mobile and backend codebases:
 
-### Running Backend Tests (Pytest)
+### Backend Tests (Pytest)
 ```bash
 cd backend
-pytest
+python -m pytest tests/
 ```
-> **Current Status:** `96 passed, 0 failed`  
-> Verifies JWT auth, OTP password reset lifecycle, baseline screening logic, Gemini AI integration, audio analysis, RBAC permissions, and collaboration APIs.
+> **Result:** `18 passed in 20.71s` (100% passing)  
+> Verifies JWT auth, password recovery OTP lifecycle, specialist caseload querying, AI recommendation human-review oversight, and guardian consent isolation.
 
-### Running Mobile Tests (Flutter Test)
+### Mobile Tests (Flutter Test)
 ```bash
 cd mobile
 flutter test
 ```
-> **Current Status:** `222 passed, 0 failed`  
-> Verifies UI widget hierarchies, responsive viewports (320px to 430px), Stitch-designed Specialist and Auth screens, Riverpod state updates, audio recorder interactions, and navigation routes.
+> **Result:** `All tests passed! (126 tests passed)`  
+> Validates Stitch-accurate widget hierarchies, responsive mobile layouts (320px, 360px, 390px, 430px), Riverpod state transitions, tele-practice controls, and navigation guards.
+
+### Flutter Code Analysis
+```bash
+cd mobile
+flutter analyze
+```
+> **Result:** `No issues found! (ran in 4.6s)` — 0 errors, 0 warnings, 0 lints.
 
 ---
 
-## 🔒 Data Privacy, Security & Consent Isolation
+## 🔒 Data Privacy, Security & Guardian Consent Isolation
 
-1. **FERPA & COPPA Principles:**
-   - No biometric voice data is stored without explicit parental consent.
-   - Learner profiles are protected and accessible only to linked parents, verified teachers, and licensed specialists.
-2. **Consent-Gated Collaboration:**
-   - Specialists and educators can only access student records after a parent explicitly approves the connection request.
-3. **Encrypted In-Transit & At-Rest:**
-   - Audio transmissions use HTTPS/WSS encryption.
-   - User credentials, session tokens, and passwords utilize modern hashing (Argon2 / BCrypt).
-4. **Strict Sanitization:**
-   - The `.gitignore` strictly ignores local databases, cache files, and private `.env` credential files.
-
----
-
-## 🚀 Roadmap & Contribution Guidelines
-
-- [x] Baseline adaptive screening questionnaire & skill snapshots.
-- [x] Dual-track curriculum engine (DLD vs Dyslexia).
-- [x] Real-time audio waveform visualizer & Gemini AI speech assessment.
-- [x] 6-digit OTP email verification via Gmail SMTP.
-- [x] Specialist caseload management, articulation analytics & consultation threads.
-- [x] Teacher classroom roster, accommodations & IEP goal tracking.
-- [ ] Offline-first exercise caching via Hive / SQLite.
-- [ ] Multilingual phonemic assessment (Spanish, Hindi, French).
-- [ ] Web Speech API real-time fallback for pure web clients.
-
-### How to Contribute
-1. Fork the repository.
-2. Create a feature branch (`git checkout -b feat/amazing-feature`).
-3. Commit your changes (`git commit -m 'feat: add amazing feature'`).
-4. Ensure all backend and mobile tests pass (`pytest` & `flutter test`).
-5. Push to your branch (`git push origin feat/amazing-feature`).
-6. Open a Pull Request.
+1. **Guardian Consent Gating**:
+   - For child learners, clinical conversations and profile access remain in a protected lock state until guardian consent is explicitly verified.
+2. **Strict Server-Side RBAC**:
+   - Specialist endpoints reject unauthorized roles with `403 Forbidden` errors.
+   - Non-specialist attempts to access clinical interfaces cleanly trigger the "Return to Login" security fallback.
+3. **Hardware Storage Isolation**:
+   - Mobile authentication tokens are stored securely in hardware-backed storage (`flutter_secure_storage`).
+   - Logging out immediately wipes local session tokens and resets Riverpod states.
+4. **Lean Footprint & Permission Minimization**:
+   - Unused audio recording packages and unnecessary microphone permissions have been removed from the mobile client manifests.
 
 ---
 
@@ -562,4 +495,4 @@ This project is licensed under the **MIT License** — see the [LICENSE](LICENSE
 
 ---
 
-**Developed with ❤️ for learners, families, educators, and clinicians worldwide.**
+**Developed with ❤️ for Speech-Language Pathologists, developmental clinicians, and learners worldwide.**
