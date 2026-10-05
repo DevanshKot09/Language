@@ -1686,11 +1686,10 @@ class _SpecialistLearnerDetailScreenState
               ElevatedButton(
                 onPressed: () {
                   Navigator.pop(ctx);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Connected to live speech practice room.'),
-                      backgroundColor: Color(0xFF4F46E5),
-                    ),
+                  Navigator.pushNamed(
+                    context,
+                    AppRoutes.specialistLiveSession,
+                    arguments: widget.learnerId,
                   );
                 },
                 style: ElevatedButton.styleFrom(

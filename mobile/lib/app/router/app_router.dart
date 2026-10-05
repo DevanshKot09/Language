@@ -38,6 +38,7 @@ import '../../features/collaboration/presentation/screens/relationships_screen.d
 import '../../features/collaboration/presentation/screens/invite_collaborator_screen.dart';
 import '../../features/collaboration/presentation/screens/specialist_messages_screen.dart';
 import '../../features/collaboration/presentation/screens/collaboration_chat_screen.dart';
+import '../../features/collaboration/presentation/screens/specialist_live_session_screen.dart';
 
 /// Central route constants for LINGUA AI.
 class AppRoutes {
@@ -83,6 +84,7 @@ class AppRoutes {
   static const String inviteCollaborator = '/relationships/invite';
   static const String specialistMessages = '/specialist/messages';
   static const String chatThread = '/collaboration/chat';
+  static const String specialistLiveSession = '/specialist/live-session';
 }
 
 
@@ -298,6 +300,14 @@ class AppRouter {
             targetLearnerId: args['target_learner_id'] as String?,
             roles: (args['roles'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? const [],
             isLocked: args['is_locked'] as bool? ?? false,
+          ),
+        );
+
+      case AppRoutes.specialistLiveSession:
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => SpecialistLiveSessionScreen(
+            sessionOrLearner: settings.arguments,
           ),
         );
 

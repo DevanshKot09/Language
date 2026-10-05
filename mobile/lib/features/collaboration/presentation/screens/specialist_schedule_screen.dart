@@ -483,7 +483,11 @@ class _SpecialistScheduleScreenState extends ConsumerState<SpecialistScheduleScr
                   label: 'Join session with ${s.learnerName}',
                   child: ElevatedButton.icon(
                     key: const Key('schedule_join_next_button'),
-                    onPressed: () => _openLearner(s.learnerId),
+                    onPressed: () => Navigator.pushNamed(
+                      context,
+                      AppRoutes.specialistLiveSession,
+                      arguments: s,
+                    ),
                     icon: const Icon(Icons.videocam_rounded, size: 19),
                     label: const Text('Join Session', maxLines: 1, softWrap: false),
                     style: ElevatedButton.styleFrom(
@@ -768,7 +772,11 @@ class _SpecialistScheduleScreenState extends ConsumerState<SpecialistScheduleScr
       children: [
         if (isNext)
           ElevatedButton.icon(
-            onPressed: () => _openLearner(s.learnerId),
+            onPressed: () => Navigator.pushNamed(
+              context,
+              AppRoutes.specialistLiveSession,
+              arguments: s,
+            ),
             icon: const Icon(Icons.play_arrow_rounded, size: 16),
             label: const Text('Join'),
             style: ElevatedButton.styleFrom(
