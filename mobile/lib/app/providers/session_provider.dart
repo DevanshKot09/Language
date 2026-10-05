@@ -6,8 +6,6 @@ import '../../shared/models/auth_user.dart';
 import '../../shared/models/skill_track.dart';
 import '../../shared/models/user_profile.dart';
 import '../../shared/models/user_role.dart';
-import '../../features/collaboration/application/collaboration_providers.dart';
-import '../../features/progress/application/progress_providers.dart';
 import 'age_profile_provider.dart';
 import 'auth_provider.dart';
 import 'storage_provider.dart';

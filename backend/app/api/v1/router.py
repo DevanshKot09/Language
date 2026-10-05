@@ -3,9 +3,6 @@ from app.api.v1.endpoints import (
     health,
     auth,
     profile,
-    progress,
-    goals,
-    achievements,
     collaboration,
     parent,
     teacher,
@@ -17,9 +14,6 @@ api_v1_router = APIRouter()
 api_v1_router.include_router(health.router, tags=["Health"])
 api_v1_router.include_router(auth.router, prefix="/auth", tags=["Authentication"])
 api_v1_router.include_router(profile.router, prefix="/profile", tags=["Profile & Preferences"])
-api_v1_router.include_router(progress.router, prefix="/progress", tags=["Progress & Analytics"])
-api_v1_router.include_router(goals.router, prefix="/goals", tags=["Learner Goals"])
-api_v1_router.include_router(achievements.router, prefix="/achievements", tags=["Achievements & Milestones"])
 api_v1_router.include_router(collaboration.router, prefix="/relationships", tags=["Relationships & Collaboration"])
 api_v1_router.include_router(parent.router, prefix="/parent", tags=["Parent / Caregiver Workspace"])
 api_v1_router.include_router(teacher.router, prefix="/teacher", tags=["Teacher / Educator Workspace"])

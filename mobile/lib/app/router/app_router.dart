@@ -4,12 +4,6 @@ import '../../features/welcome/welcome_screen.dart';
 import '../../features/authentication/login_screen.dart';
 import '../../features/authentication/signup_screen.dart';
 import '../../features/authentication/forgot_password_screen.dart';
-import '../../features/progress/progress_screen.dart';
-import '../../features/progress/presentation/screens/skill_progress_detail_screen.dart';
-import '../../features/progress/presentation/screens/activity_timeline_screen.dart';
-import '../../features/progress/presentation/screens/goals_dashboard_screen.dart';
-import '../../features/progress/presentation/screens/create_goal_screen.dart';
-import '../../features/progress/presentation/screens/achievement_center_screen.dart';
 import '../../features/collaboration/presentation/screens/parent_dashboard_screen.dart';
 import '../../features/collaboration/presentation/screens/teacher_dashboard_screen.dart';
 import '../../features/collaboration/presentation/screens/create_assignment_screen.dart';
@@ -30,14 +24,6 @@ class AppRoutes {
   static const String login = '/login';
   static const String signup = '/signup';
   static const String forgotPassword = '/forgot-password';
-  static const String progress = '/progress';
-  static const String skillDetail = '/progress/skills';
-  static const String timeline = '/progress/timeline';
-  static const String goals = '/goals';
-  static const String createGoal = '/goals/create';
-  static const String achievements = '/achievements';
-  static const String settings = '/settings';
-  static const String accessibility = '/accessibility';
 
   // Phase 11 Collaboration Workspaces & Reports
   static const String parentDashboard = '/parent';
@@ -86,37 +72,6 @@ class AppRouter {
           settings: settings,
           builder: (_) => ForgotPasswordScreen(initialEmail: initialEmail),
         );
-      case AppRoutes.progress:
-        return MaterialPageRoute(
-          settings: settings,
-          builder: (_) => const ProgressScreen(),
-        );
-      case AppRoutes.skillDetail:
-        return MaterialPageRoute(
-          settings: settings,
-          builder: (_) => const SkillProgressDetailScreen(),
-        );
-      case AppRoutes.timeline:
-        return MaterialPageRoute(
-          settings: settings,
-          builder: (_) => const ActivityTimelineScreen(),
-        );
-      case AppRoutes.goals:
-        return MaterialPageRoute(
-          settings: settings,
-          builder: (_) => const GoalsDashboardScreen(),
-        );
-      case AppRoutes.createGoal:
-        return MaterialPageRoute(
-          settings: settings,
-          builder: (_) => const CreateGoalScreen(),
-        );
-      case AppRoutes.achievements:
-        return MaterialPageRoute(
-          settings: settings,
-          builder: (_) => const AchievementCenterScreen(),
-        );
-
       case AppRoutes.parentDashboard:
         return MaterialPageRoute(
           settings: settings,
