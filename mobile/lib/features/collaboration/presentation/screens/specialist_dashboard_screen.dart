@@ -113,8 +113,8 @@ class _SpecialistDashboardScreenState extends ConsumerState<SpecialistDashboardS
                 ),
                 const SizedBox(height: 24),
                 LinguaButton(
-                  label: 'Switch Workspace',
-                  onPressed: () => Navigator.pushReplacementNamed(context, AppRoutes.home),
+                  label: 'Return to Login',
+                  onPressed: () => Navigator.pushReplacementNamed(context, AppRoutes.login),
                 ),
               ],
             ),
@@ -201,12 +201,7 @@ class _SpecialistDashboardScreenState extends ConsumerState<SpecialistDashboardS
 
             const SizedBox(height: 18),
 
-            // 3. Hero "Action required" Consent Requests Card
-            _buildConsentRequestsCard(context, consentCount),
-
-            const SizedBox(height: 14),
-
-            // 4. Metric Cards: Caseload & Practices
+            // Metric Cards: Caseload & Practices
             _buildMetricsRow(context, activeLearnersCount),
 
             const SizedBox(height: 14),
@@ -398,120 +393,7 @@ class _SpecialistDashboardScreenState extends ConsumerState<SpecialistDashboardS
   }
 
   // ---------------------------------------------------------------------------
-  // 3. CONSENT REQUESTS CARD ("Action required")
-  // ---------------------------------------------------------------------------
-  Widget _buildConsentRequestsCard(BuildContext context, int consentCount) {
-    return LinguaAnimatedCard(
-      padding: const EdgeInsets.all(18),
-      borderRadius: 22,
-      backgroundColor: Colors.white,
-      borderColor: const Color(0xFFEEF2F6),
-      borderWidth: 1.5,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Top Row: Icon and "Action required" pill
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(
-                width: 44,
-                height: 44,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFEDE9FE),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                alignment: Alignment.center,
-                child: const Icon(
-                  Icons.fact_check_outlined,
-                  color: Color(0xFF5B5BD6),
-                  size: 24,
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 5),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFEE2E2),
-                  borderRadius: BorderRadius.circular(LinguaTokens.radiusPill),
-                ),
-                child: const Text(
-                  'Action required',
-                  style: TextStyle(
-                    fontSize: 11.5,
-                    fontWeight: FontWeight.w700,
-                    color: Color(0xFFDC2626),
-                  ),
-                ),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 14),
-
-          // Title
-          Text(
-            '$consentCount consent requests',
-            style: const TextStyle(
-              fontSize: 19,
-              fontWeight: FontWeight.w800,
-              color: LinguaTokens.ink900,
-              letterSpacing: -0.3,
-            ),
-          ),
-
-          const SizedBox(height: 5),
-
-          // Subtitle
-          const Text(
-            'Review before accessing learner profiles and activity audio.',
-            style: TextStyle(
-              fontSize: 13,
-              color: Color(0xFF64748B),
-              height: 1.35,
-            ),
-          ),
-
-          const SizedBox(height: 16),
-
-          // CTA Button: "Review requests ->"
-          SizedBox(
-            width: double.infinity,
-            height: 48,
-            child: ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, AppRoutes.relationships);
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: LinguaTokens.primary600,
-                foregroundColor: Colors.white,
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(LinguaTokens.radiusPill),
-                ),
-              ),
-              child: const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Review requests',
-                    style: TextStyle(
-                      fontSize: 14.5,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  SizedBox(width: 8),
-                  Icon(Icons.arrow_forward_rounded, size: 18),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ---------------------------------------------------------------------------
-  // 4. METRIC CARDS ROW (Caseload & Practices)
+  // METRIC CARDS ROW (Caseload & Practices)
   // ---------------------------------------------------------------------------
   Widget _buildMetricsRow(BuildContext context, int activeLearnersCount) {
     return Row(
@@ -628,9 +510,6 @@ class _SpecialistDashboardScreenState extends ConsumerState<SpecialistDashboardS
             backgroundColor: Colors.white,
             borderColor: const Color(0xFFEEF2F6),
             borderWidth: 1.5,
-            onTap: () {
-              Navigator.pushNamed(context, AppRoutes.timeline);
-            },
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -1013,19 +892,9 @@ class _SpecialistDashboardScreenState extends ConsumerState<SpecialistDashboardS
         ),
         const SizedBox(height: 12),
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            // 1. Consents
-            _buildToolItem(
-              label: 'Consents',
-              icon: Icons.assignment_outlined,
-              iconColor: const Color(0xFF5B5BD6),
-              bgColor: const Color(0xFFEDE9FE),
-              badgeNumber: consentCount,
-              onTap: () => Navigator.pushNamed(context, AppRoutes.relationships),
-            ),
-
-            // 2. Caseload
+            // 1. Caseload
             _buildToolItem(
               label: 'Caseload',
               icon: Icons.groups_rounded,
@@ -1036,16 +905,7 @@ class _SpecialistDashboardScreenState extends ConsumerState<SpecialistDashboardS
               },
             ),
 
-            // 3. Reports
-            _buildToolItem(
-              label: 'Reports',
-              icon: Icons.description_outlined,
-              iconColor: const Color(0xFFD97706),
-              bgColor: const Color(0xFFFEF3C7),
-              onTap: () => Navigator.pushNamed(context, AppRoutes.learnerReport),
-            ),
-
-            // 4. Booking
+            // 2. Booking
             _buildToolItem(
               label: 'Booking',
               icon: Icons.calendar_month_outlined,
@@ -2295,10 +2155,14 @@ class _SpecialistDashboardScreenState extends ConsumerState<SpecialistDashboardS
         activityIcon: Icons.lock_outline_rounded,
         activityIconColor: const Color(0xFFB45309),
         activityText: 'Recordings locked until guardian signs',
-        actionText: 'Review Consent',
-        isConsentReview: true,
+        actionText: 'View Profile',
+        isConsentReview: false,
         onTap: () {
-          Navigator.pushNamed(context, AppRoutes.relationships);
+          Navigator.pushNamed(
+            context,
+            AppRoutes.specialistLearnerDetail,
+            arguments: 'lr-3',
+          );
         },
       ),
       _CaseloadCardData(
@@ -2711,10 +2575,7 @@ class _SpecialistDashboardScreenState extends ConsumerState<SpecialistDashboardS
                 leading: const Icon(Icons.mark_email_unread_outlined, color: Color(0xFFEF4444)),
                 title: const Text('Consent request pending for Liam K.'),
                 subtitle: const Text('Guardian submitted audio permission request 2h ago'),
-                onTap: () {
-                  Navigator.pop(ctx);
-                  Navigator.pushNamed(context, AppRoutes.relationships);
-                },
+                onTap: () => Navigator.pop(ctx),
               ),
               ListTile(
                 leading: const Icon(Icons.check_circle_outline, color: Color(0xFF0D9488)),
@@ -2766,22 +2627,6 @@ class _SpecialistDashboardScreenState extends ConsumerState<SpecialistDashboardS
                 ],
               ),
               const Divider(height: 28),
-              ListTile(
-                leading: const Icon(Icons.accessibility_new, color: LinguaTokens.primary600),
-                title: const Text('Accessibility Settings'),
-                onTap: () {
-                  Navigator.pop(ctx);
-                  Navigator.pushNamed(context, AppRoutes.accessibility);
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.settings_outlined, color: LinguaTokens.ink700),
-                title: const Text('Account & Privacy Settings'),
-                onTap: () {
-                  Navigator.pop(ctx);
-                  Navigator.pushNamed(context, AppRoutes.settings);
-                },
-              ),
               ListTile(
                 leading: const Icon(Icons.logout, color: LinguaTokens.danger600),
                 title: const Text('Sign Out', style: TextStyle(color: LinguaTokens.danger600, fontWeight: FontWeight.w600)),

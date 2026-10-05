@@ -4,15 +4,9 @@ import '../../features/welcome/welcome_screen.dart';
 import '../../features/authentication/login_screen.dart';
 import '../../features/authentication/signup_screen.dart';
 import '../../features/authentication/forgot_password_screen.dart';
-import '../../features/collaboration/presentation/screens/parent_dashboard_screen.dart';
-import '../../features/collaboration/presentation/screens/teacher_dashboard_screen.dart';
-import '../../features/collaboration/presentation/screens/create_assignment_screen.dart';
 import '../../features/collaboration/presentation/screens/specialist_dashboard_screen.dart';
 import '../../features/collaboration/presentation/screens/specialist_learner_detail_screen.dart';
-import '../../features/collaboration/presentation/screens/learner_report_screen.dart';
 import '../../features/collaboration/presentation/screens/specialist_schedule_screen.dart';
-import '../../features/collaboration/presentation/screens/relationships_screen.dart';
-import '../../features/collaboration/presentation/screens/invite_collaborator_screen.dart';
 import '../../features/collaboration/presentation/screens/specialist_messages_screen.dart';
 import '../../features/collaboration/presentation/screens/collaboration_chat_screen.dart';
 import '../../features/collaboration/presentation/screens/specialist_live_session_screen.dart';
@@ -25,22 +19,14 @@ class AppRoutes {
   static const String signup = '/signup';
   static const String forgotPassword = '/forgot-password';
 
-  // Phase 11 Collaboration Workspaces & Reports
-  static const String parentDashboard = '/parent';
-  static const String teacherDashboard = '/teacher';
-  static const String createAssignment = '/teacher/assignments/create';
+  // Specialist Workspace & Collaboration
   static const String specialistDashboard = '/specialist';
   static const String specialistLearnerDetail = '/specialist/learner';
   static const String specialistSchedule = '/specialist/schedule';
-  static const String reportBuilder = '/reports/builder';
-  static const String learnerReport = '/reports/learner';
-  static const String relationships = '/relationships';
-  static const String inviteCollaborator = '/relationships/invite';
   static const String specialistMessages = '/specialist/messages';
   static const String chatThread = '/collaboration/chat';
   static const String specialistLiveSession = '/specialist/live-session';
 }
-
 
 /// Central route generator for LINGUA AI.
 class AppRouter {
@@ -72,21 +58,6 @@ class AppRouter {
           settings: settings,
           builder: (_) => ForgotPasswordScreen(initialEmail: initialEmail),
         );
-      case AppRoutes.parentDashboard:
-        return MaterialPageRoute(
-          settings: settings,
-          builder: (_) => const ParentDashboardScreen(),
-        );
-      case AppRoutes.teacherDashboard:
-        return MaterialPageRoute(
-          settings: settings,
-          builder: (_) => const TeacherDashboardScreen(),
-        );
-      case AppRoutes.createAssignment:
-        return MaterialPageRoute(
-          settings: settings,
-          builder: (_) => const CreateAssignmentScreen(),
-        );
       case AppRoutes.specialistDashboard:
         final initialTab = settings.arguments as int? ?? 0;
         return MaterialPageRoute(
@@ -103,23 +74,6 @@ class AppRouter {
         return MaterialPageRoute(
           settings: settings,
           builder: (_) => const SpecialistScheduleScreen(showBottomNav: true),
-        );
-      case AppRoutes.reportBuilder:
-      case AppRoutes.learnerReport:
-        final learnerId = settings.arguments as String?;
-        return MaterialPageRoute(
-          settings: settings,
-          builder: (_) => LearnerReportScreen(learnerId: learnerId),
-        );
-      case AppRoutes.relationships:
-        return MaterialPageRoute(
-          settings: settings,
-          builder: (_) => const RelationshipsScreen(),
-        );
-      case AppRoutes.inviteCollaborator:
-        return MaterialPageRoute(
-          settings: settings,
-          builder: (_) => const InviteCollaboratorScreen(),
         );
       case AppRoutes.specialistMessages:
         return MaterialPageRoute(
@@ -139,7 +93,6 @@ class AppRouter {
             isLocked: args['is_locked'] as bool? ?? false,
           ),
         );
-
       case AppRoutes.specialistLiveSession:
         return MaterialPageRoute(
           settings: settings,

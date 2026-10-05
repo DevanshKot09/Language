@@ -385,39 +385,12 @@ class _CollaborationChatScreenState extends ConsumerState<CollaborationChatScree
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.analytics_outlined, color: Color(0xFF0284C7)),
-                title: const Text('View Progress Report', style: TextStyle(fontWeight: FontWeight.w700)),
-                subtitle: const Text('Factual educational metrics & session summary', style: TextStyle(fontSize: 11)),
-                onTap: () {
-                  Navigator.pop(ctx);
-                  Navigator.pushNamed(
-                    context,
-                    AppRoutes.learnerReport,
-                    arguments: widget.targetLearnerId,
-                  );
-                },
-              ),
-              ListTile(
                 leading: const Icon(Icons.calendar_month_outlined, color: Color(0xFF059669)),
                 title: const Text('Schedule Support Session', style: TextStyle(fontWeight: FontWeight.w700)),
                 subtitle: const Text('Coordinate live interactive practice', style: TextStyle(fontSize: 11)),
                 onTap: () {
                   Navigator.pop(ctx);
                   Navigator.pushNamed(context, AppRoutes.specialistSchedule);
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.shield_outlined, color: Color(0xFF7C3AED)),
-                title: const Text('Collaboration Privacy & Consent', style: TextStyle(fontWeight: FontWeight.w700)),
-                subtitle: Text('Status: ${widget.isLocked ? "Pending Consent" : "Verified & Active"}', style: const TextStyle(fontSize: 11)),
-                onTap: () {
-                  Navigator.pop(ctx);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Conversation ${widget.conversationId} • Protected by LINGUA AI Privacy'),
-                      behavior: SnackBarBehavior.floating,
-                    ),
-                  );
                 },
               ),
             ],

@@ -522,42 +522,16 @@ class _SpecialistLearnerDetailScreenState
   Widget _buildPrimaryActionGrid(BuildContext context) {
     return Column(
       children: [
-        Row(
-          children: [
-            // Start Session (Vibrant Primary CTA)
-            Expanded(
-              child: _buildActionCard(
-                context: context,
-                isPrimary: true,
-                icon: Icons.videocam_rounded,
-                iconColor: Colors.white,
-                iconBgColor: Colors.white.withValues(alpha: 0.22),
-                title: 'Start Session',
-                subtitle: 'Live 1-on-1 Practice',
-                onTap: () => _startLiveSessionModal(context),
-              ),
-            ),
-            const SizedBox(width: 12),
-            // View Reports
-            Expanded(
-              child: _buildActionCard(
-                context: context,
-                isPrimary: false,
-                icon: Icons.article_outlined,
-                iconColor: const Color(0xFF4F46E5),
-                iconBgColor: const Color(0xFFEDE9FE),
-                title: 'View Reports',
-                subtitle: 'Latest summaries',
-                onTap: () {
-                  Navigator.pushNamed(
-                    context,
-                    AppRoutes.learnerReport,
-                    arguments: _activeLearnerId,
-                  );
-                },
-              ),
-            ),
-          ],
+        // Start Session (Vibrant Primary CTA)
+        _buildActionCard(
+          context: context,
+          isPrimary: true,
+          icon: Icons.videocam_rounded,
+          iconColor: Colors.white,
+          iconBgColor: Colors.white.withValues(alpha: 0.22),
+          title: 'Start Session',
+          subtitle: 'Live 1-on-1 Practice',
+          onTap: () => _startLiveSessionModal(context),
         ),
         const SizedBox(height: 12),
         Row(
@@ -1317,40 +1291,6 @@ class _SpecialistLearnerDetailScreenState
               ],
             ),
           ),
-          const SizedBox(height: 10),
-
-          // Footer Action Link
-          Align(
-            alignment: Alignment.centerRight,
-            child: InkWell(
-              onTap: () {
-                Navigator.pushNamed(
-                  context,
-                  AppRoutes.learnerReport,
-                  arguments: _activeLearnerId,
-                );
-              },
-              child: const Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    'View Full Report',
-                    style: TextStyle(
-                      fontSize: 12.5,
-                      fontWeight: FontWeight.w700,
-                      color: Color(0xFF4F46E5),
-                    ),
-                  ),
-                  SizedBox(width: 4),
-                  Icon(
-                    Icons.arrow_forward_rounded,
-                    size: 13,
-                    color: Color(0xFF4F46E5),
-                  ),
-                ],
-              ),
-            ),
-          ),
         ],
       ),
     );
@@ -1795,47 +1735,6 @@ class _SpecialistLearnerDetailScreenState
                   Navigator.pop(ctx);
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Opening chat with Priya Mehta.')),
-                  );
-                },
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _showMoreOptionsSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (ctx) => SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 14),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ListTile(
-                leading: const Icon(Icons.picture_as_pdf_outlined, color: Color(0xFF4F46E5)),
-                title: const Text('Export Summary Dossier (PDF)'),
-                onTap: () {
-                  Navigator.pop(ctx);
-                  Navigator.pushNamed(
-                    context,
-                    AppRoutes.learnerReport,
-                    arguments: _activeLearnerId,
-                  );
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.share_outlined, color: Color(0xFF4F46E5)),
-                title: const Text('Share Progress with Parent/Educator'),
-                onTap: () {
-                  Navigator.pop(ctx);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Progress report shared with support team.')),
                   );
                 },
               ),
