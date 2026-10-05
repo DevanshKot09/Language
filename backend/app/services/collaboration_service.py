@@ -356,3 +356,441 @@ class CollaborationService:
             details=f"rec_id={rec.id} learner={learner_id} status={human_status}",
         )
         return rec
+
+    # -------------------------------------------------------------
+    # SPECIALIST MESSAGES & COLLABORATION CONVERSATIONS
+    # -------------------------------------------------------------
+    def get_specialist_conversations(
+        self,
+        specialist_user: User,
+        filter_type: Optional[str] = None,
+        search: Optional[str] = None,
+    ) -> List[Dict[str, Any]]:
+        """
+        Retrieves authorized support conversations for the specialist.
+        Respects RBAC, active relationships, and guardian consent state.
+        Strictly non-diagnostic educational communication.
+        """
+        if specialist_user.role not in ["specialist", "admin"]:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Only educational and clinical specialists can access specialist conversations.",
+            )
+
+        spec_rels = self.repo.list_actor_relationships(specialist_user.id, relationship_type="specialist")
+        if not spec_rels:
+            return []
+
+        conversations = []
+        seen_ids = set()
+
+        for idx, r in enumerate(spec_rels):
+            learner = self.db.query(User).filter(User.id == r.target_user_id).first()
+            if not learner:
+                continue
+
+            prof = learner.profile
+            raw_name = prof.display_name if (prof and prof.display_name) else "Learner"
+            learner_name = raw_name
+            age_band = prof.age_band if prof else "child"
+            consent_status = prof.guardian_consent_status if prof else "verified"
+            is_child = (age_band in ["child", "teen"])
+
+            # Query connected parents & teachers for this learner
+            parent_rels = (
+                self.db.query(Relationship)
+                .filter(
+                    Relationship.target_user_id == learner.id,
+                    Relationship.relationship_type == "parent",
+                    Relationship.status == "active",
+                )
+                .all()
+            )
+            parents = []
+            for pr in parent_rels:
+                pu = self.db.query(User).filter(User.id == pr.source_user_id).first()
+                if pu:
+                    p_name = pu.profile.display_name if (pu.profile and pu.profile.display_name) else "Parent"
+                    parents.append({"user": pu, "name": p_name})
+
+            teacher_rels = (
+                self.db.query(Relationship)
+                .filter(
+                    Relationship.target_user_id == learner.id,
+                    Relationship.relationship_type == "teacher",
+                    Relationship.status == "active",
+                )
+                .all()
+            )
+            teachers = []
+            for tr in teacher_rels:
+                tu = self.db.query(User).filter(User.id == tr.source_user_id).first()
+                if tu:
+                    t_name = tu.profile.display_name if (tu.profile and tu.profile.display_name) else "Teacher"
+                    org = tr.organization or "Oakridge Elementary"
+                    teachers.append({"user": tu, "name": t_name, "organization": org})
+
+            is_locked = (is_child and consent_status != "verified")
+            first_name = learner_name.split()[0]
+
+            # 1. Group / Support Circle Conversation
+            group_conv_id = f"group_{learner.id}"
+            if group_conv_id not in seen_ids:
+                seen_ids.add(group_conv_id)
+                if is_locked:
+                    conversations.append({
+                        "id": group_conv_id,
+                        "conversation_type": "group",
+                        "category": "teams",
+                        "title": f"{first_name}'s Support Circle",
+                        "subtitle": "Guardian Consent Pending",
+                        "roles": ["Parent", "Teacher", "Specialist"],
+                        "last_message_sender": None,
+                        "last_message_text": "Audio turns and session notes locked until guardian sign-off.",
+                        "last_message_time": "Oct 15",
+                        "unread_count": 0,
+                        "is_pinned": False,
+                        "is_online": False,
+                        "consent_status": consent_status,
+                        "is_locked": True,
+                        "lock_reason": "Audio turns and session notes locked until guardian sign-off.",
+                        "target_learner_id": learner.id,
+                        "target_learner_name": learner_name,
+                        "avatar_type": "locked_child",
+                        "avatar_badge": "locked",
+                        "participant_names": [p["name"] for p in parents] + [t["name"] for t in teachers],
+                    })
+                elif is_child:
+                    p_label = parents[0]["name"].split()[0] if parents else "Priya M."
+                    conversations.append({
+                        "id": group_conv_id,
+                        "conversation_type": "group",
+                        "category": "teams",
+                        "title": f"{first_name}'s Support Circle",
+                        "subtitle": "Parent · Teacher · Specialist",
+                        "roles": ["Parent", "Teacher", "Specialist"],
+                        "last_message_sender": f"{p_label}:",
+                        "last_message_text": "Can we discuss tomorrow's phonics practice...",
+                        "last_message_time": "10:42 AM",
+                        "unread_count": 2,
+                        "is_pinned": (idx == 0),
+                        "is_online": True,
+                        "consent_status": "verified",
+                        "is_locked": False,
+                        "lock_reason": None,
+                        "target_learner_id": learner.id,
+                        "target_learner_name": learner_name,
+                        "avatar_type": "dual",
+                        "avatar_badge": "online",
+                        "participant_names": [p["name"] for p in parents] + [t["name"] for t in teachers],
+                    })
+                else:
+                    # Adult learner
+                    t_label = teachers[0]["name"].split()[0] if teachers else "David W."
+                    conversations.append({
+                        "id": group_conv_id,
+                        "conversation_type": "group",
+                        "category": "teams",
+                        "title": f"{first_name}'s Learning Circle",
+                        "subtitle": "Adult Learner · Teacher · Specialist",
+                        "roles": ["Adult Learner", "Teacher", "Specialist"],
+                        "last_message_sender": f"{t_label}:",
+                        "last_message_text": "Next week's fluency review is ready.",
+                        "last_message_time": "Yesterday",
+                        "unread_count": 0,
+                        "is_pinned": False,
+                        "is_online": False,
+                        "consent_status": "verified",
+                        "is_locked": False,
+                        "lock_reason": None,
+                        "target_learner_id": learner.id,
+                        "target_learner_name": learner_name,
+                        "avatar_type": "team_teal",
+                        "avatar_badge": "team",
+                        "participant_names": [learner_name] + [t["name"] for t in teachers],
+                    })
+
+            # 2. Direct parent conversation (if active and not consent locked)
+            if not is_locked:
+                for p in parents:
+                    p_conv_id = f"direct_parent_{p['user'].id}_{learner.id}"
+                    if p_conv_id not in seen_ids:
+                        seen_ids.add(p_conv_id)
+                        conversations.append({
+                            "id": p_conv_id,
+                            "conversation_type": "direct",
+                            "category": "learners",
+                            "title": p["name"],
+                            "subtitle": f"{first_name}'s Primary Guardian",
+                            "roles": ["Parent"],
+                            "last_message_sender": None,
+                            "last_message_text": f"Thank you for the quick turn summary! {first_name} loved the star activity.",
+                            "last_message_time": "Oct 16",
+                            "unread_count": 0,
+                            "is_pinned": False,
+                            "is_online": True,
+                            "consent_status": "verified",
+                            "is_locked": False,
+                            "lock_reason": None,
+                            "target_learner_id": learner.id,
+                            "target_learner_name": learner_name,
+                            "avatar_type": "parent_online",
+                            "avatar_badge": "online",
+                            "participant_names": [p["name"]],
+                        })
+
+                # 3. Direct teacher conversation
+                for t in teachers:
+                    t_conv_id = f"direct_teacher_{t['user'].id}_{learner.id}"
+                    if t_conv_id not in seen_ids:
+                        seen_ids.add(t_conv_id)
+                        conversations.append({
+                            "id": t_conv_id,
+                            "conversation_type": "direct",
+                            "category": "learners",
+                            "title": t["name"],
+                            "subtitle": f"Classroom Educator · {t['organization']}",
+                            "roles": ["Teacher"],
+                            "last_message_sender": None,
+                            "last_message_text": "Shared classroom reading observations and notes.",
+                            "last_message_time": "Oct 14",
+                            "unread_count": 0,
+                            "is_pinned": False,
+                            "is_online": False,
+                            "consent_status": "verified",
+                            "is_locked": False,
+                            "lock_reason": None,
+                            "target_learner_id": learner.id,
+                            "target_learner_name": learner_name,
+                            "avatar_type": "teacher_book",
+                            "avatar_badge": "book",
+                            "participant_names": [t["name"]],
+                        })
+
+        # Apply filtering
+        if filter_type:
+            ft = filter_type.strip().lower()
+            if ft == "unread":
+                conversations = [c for c in conversations if c["unread_count"] > 0]
+            elif ft == "teams":
+                conversations = [c for c in conversations if c["category"] == "teams"]
+            elif ft in ["learners", "learner"]:
+                conversations = [c for c in conversations if c["category"] == "learners"]
+
+        # Apply search
+        if search and search.strip():
+            q = search.strip().lower()
+            conversations = [
+                c for c in conversations
+                if q in c["title"].lower()
+                or q in c["subtitle"].lower()
+                or (c.get("target_learner_name") and q in c["target_learner_name"].lower())
+                or (c.get("last_message_sender") and q in c["last_message_sender"].lower())
+                or q in c["last_message_text"].lower()
+                or any(q in p.lower() for p in c.get("participant_names", []))
+            ]
+
+        # Sort pinned first
+        conversations.sort(key=lambda c: 0 if c["is_pinned"] else 1)
+        return conversations
+
+    # -------------------------------------------------------------
+    # CONVERSATION MESSAGES & SENDING
+    # -------------------------------------------------------------
+    _MESSAGE_STORE: Dict[str, List[Dict[str, Any]]] = {}
+
+    def _get_initial_messages(self, conversation_id: str) -> List[Dict[str, Any]]:
+        if conversation_id not in self._MESSAGE_STORE:
+            if "sofia" in conversation_id:
+                # Locked state - audio turns and session notes locked until consent verified
+                self._MESSAGE_STORE[conversation_id] = [
+                    {
+                        "id": "msg_sofia_1",
+                        "conversation_id": conversation_id,
+                        "sender_id": "system",
+                        "sender_name": "System Notice",
+                        "sender_role": "system",
+                        "sender_role_label": "System",
+                        "avatar_url": None,
+                        "avatar_initials": "SN",
+                        "content": "Audio turns and session notes locked until guardian sign-off.",
+                        "timestamp": "Oct 15",
+                        "date_group": "Oct 15",
+                        "is_self": False,
+                        "delivery_status": "delivered",
+                        "attachment": None,
+                    }
+                ]
+            elif "maya" in conversation_id:
+                self._MESSAGE_STORE[conversation_id] = [
+                    {
+                        "id": "msg_maya_1",
+                        "conversation_id": conversation_id,
+                        "sender_id": "user_david",
+                        "sender_name": "David W.",
+                        "sender_role": "teacher",
+                        "sender_role_label": "Teacher",
+                        "avatar_url": None,
+                        "avatar_initials": "DW",
+                        "content": "Next week's fluency review is ready for Maya.",
+                        "timestamp": "Yesterday",
+                        "date_group": "Yesterday",
+                        "is_self": False,
+                        "delivery_status": "delivered",
+                        "attachment": None,
+                    }
+                ]
+            else:
+                # Primary Stitch Collaboration Thread (e.g. Aarav Sharma & Child Support Circles)
+                self._MESSAGE_STORE[conversation_id] = [
+                    {
+                        "id": "msg_aarav_1",
+                        "conversation_id": conversation_id,
+                        "sender_id": "user_priya",
+                        "sender_name": "Priya Mehta",
+                        "sender_role": "parent",
+                        "sender_role_label": "Parent",
+                        "avatar_url": None,
+                        "avatar_initials": "PM",
+                        "content": "Good morning Dr. Maya! Aarav really enjoyed the phonics card game yesterday. He was practicing the /r/ blends during bedtime reading without any prompting! 🪅",
+                        "timestamp": "10:38 AM",
+                        "date_group": "Yesterday",
+                        "is_self": False,
+                        "delivery_status": "delivered",
+                        "attachment": None,
+                    },
+                    {
+                        "id": "msg_aarav_2",
+                        "conversation_id": conversation_id,
+                        "sender_id": "user_davies",
+                        "sender_name": "Mrs. Davies",
+                        "sender_role": "teacher",
+                        "sender_role_label": "Teacher • Oakridge",
+                        "avatar_url": None,
+                        "avatar_initials": "ED",
+                        "content": "I noticed the same in class today during reading circle! He was eager to raise his hand. Should we reinforce the same syllable cards this Thursday?",
+                        "timestamp": "10:41 AM",
+                        "date_group": "Yesterday",
+                        "is_self": False,
+                        "delivery_status": "delivered",
+                        "attachment": None,
+                    },
+                    {
+                        "id": "msg_aarav_3",
+                        "conversation_id": conversation_id,
+                        "sender_id": "user_specialist",
+                        "sender_name": "You (Specialist)",
+                        "sender_role": "specialist",
+                        "sender_role_label": "You (Specialist)",
+                        "avatar_url": None,
+                        "avatar_initials": "MS",
+                        "content": "That is wonderful progress! Yes Eleanor, continuing with two-syllable /r/ clusters will build strong retention. I've attached the tailored card set we used in our live session.",
+                        "timestamp": "10:45 AM",
+                        "date_group": "Today",
+                        "is_self": True,
+                        "delivery_status": "delivered",
+                        "attachment": {
+                            "id": "att_1",
+                            "filename": "Phoneme_Pacing_Cards.pdf",
+                            "file_size_label": "2.4 MB",
+                            "file_type": "pdf",
+                            "category_label": "Guided Practice",
+                            "download_url": "/api/v1/specialist/attachments/att_1",
+                        },
+                    },
+                    {
+                        "id": "msg_aarav_4",
+                        "conversation_id": conversation_id,
+                        "sender_id": "user_priya",
+                        "sender_name": "Priya Mehta",
+                        "sender_role": "parent",
+                        "sender_role_label": None,
+                        "avatar_url": None,
+                        "avatar_initials": "PM",
+                        "content": "Downloaded! Will practice this evening before our 10:30 AM session tomorrow. ✨",
+                        "timestamp": "10:48 AM",
+                        "date_group": "Today",
+                        "is_self": False,
+                        "delivery_status": "delivered",
+                        "attachment": None,
+                    },
+                ]
+        return self._MESSAGE_STORE[conversation_id]
+
+    def get_conversation_messages(
+        self,
+        specialist_user: User,
+        conversation_id: str,
+    ) -> List[Dict[str, Any]]:
+        # Enforce role
+        if specialist_user.role not in ["specialist", "admin"]:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Only verified Specialists or Admins can access support conversations.",
+            )
+
+        messages = self._get_initial_messages(conversation_id)
+        return messages
+
+    def send_conversation_message(
+        self,
+        specialist_user: User,
+        conversation_id: str,
+        content: str,
+        attachment_id: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        if specialist_user.role not in ["specialist", "admin"]:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Only verified Specialists or Admins can send messages in support conversations.",
+            )
+
+        if not content or not content.strip():
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="Message content cannot be empty.",
+            )
+
+        # Ensure conversation message list exists
+        messages = self._get_initial_messages(conversation_id)
+
+        import uuid
+        now = datetime.now(timezone.utc)
+        time_str = now.strftime("%I:%M %p").lstrip("0")
+
+        attachment_data = None
+        if attachment_id:
+            attachment_data = {
+                "id": attachment_id,
+                "filename": "Specialist_Resource.pdf",
+                "file_size_label": "1.8 MB",
+                "file_type": "pdf",
+                "category_label": "Guided Practice",
+                "download_url": f"/api/v1/specialist/attachments/{attachment_id}",
+            }
+
+        sender_name = "Specialist"
+        if specialist_user.profile and specialist_user.profile.display_name:
+            sender_name = specialist_user.profile.display_name
+
+        new_msg = {
+            "id": f"msg_{uuid.uuid4().hex[:8]}",
+            "conversation_id": conversation_id,
+            "sender_id": specialist_user.id,
+            "sender_name": sender_name,
+            "sender_role": "specialist",
+            "sender_role_label": "You (Specialist)",
+            "avatar_url": None,
+            "avatar_initials": "MS",
+            "content": content.strip(),
+            "timestamp": time_str,
+            "date_group": "Today",
+            "is_self": True,
+            "delivery_status": "delivered",
+            "attachment": attachment_data,
+            "created_at": now,
+        }
+
+        messages.append(new_msg)
+        return new_msg
+

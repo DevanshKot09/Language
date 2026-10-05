@@ -159,9 +159,9 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
       final updatedSession = ref.read(userSessionProvider);
       if (!updatedSession.isOnboardingCompleted) {
         if (updatedSession.currentRole == UserRole.learner) {
-          Navigator.pushReplacementNamed(context, AppRoutes.ageMode);
+          Navigator.pushNamedAndRemoveUntil(context, AppRoutes.ageMode, (route) => false);
         } else {
-          Navigator.pushReplacementNamed(context, AppRoutes.onboarding);
+          Navigator.pushNamedAndRemoveUntil(context, AppRoutes.onboarding, (route) => false);
         }
       } else {
         final destination = switch (updatedSession.currentRole) {
@@ -170,7 +170,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
           UserRole.specialist => AppRoutes.specialistDashboard,
           UserRole.learner => AppRoutes.home,
         };
-        Navigator.pushReplacementNamed(context, destination);
+        Navigator.pushNamedAndRemoveUntil(context, destination, (route) => false);
       }
     } catch (e) {
       if (mounted) {

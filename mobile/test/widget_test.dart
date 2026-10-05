@@ -1,6 +1,8 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:lingua_ai/main.dart';
+import 'package:lingua_ai/app/router/app_router.dart';
 
 void main() {
   setUp(() {
@@ -8,7 +10,15 @@ void main() {
   });
 
   testWidgets('LINGUA AI smoke test loads Splash screen and transitions to Welcome screen', (WidgetTester tester) async {
-    await tester.pumpWidget(const LinguaApp());
+    await tester.pumpWidget(
+      const ProviderScope(
+        child: MaterialApp(
+          initialRoute: AppRoutes.splash,
+          onGenerateRoute: AppRouter.generateRoute,
+        ),
+      ),
+    );
+    await tester.pump(const Duration(milliseconds: 600));
 
     // Verify initial launch displays LINGUA AI Splash branding
     expect(find.text('LINGUA'), findsOneWidget);

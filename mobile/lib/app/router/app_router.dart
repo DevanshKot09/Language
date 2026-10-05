@@ -36,6 +36,8 @@ import '../../features/collaboration/presentation/screens/learner_report_screen.
 import '../../features/collaboration/presentation/screens/specialist_schedule_screen.dart';
 import '../../features/collaboration/presentation/screens/relationships_screen.dart';
 import '../../features/collaboration/presentation/screens/invite_collaborator_screen.dart';
+import '../../features/collaboration/presentation/screens/specialist_messages_screen.dart';
+import '../../features/collaboration/presentation/screens/collaboration_chat_screen.dart';
 
 /// Central route constants for LINGUA AI.
 class AppRoutes {
@@ -79,6 +81,8 @@ class AppRoutes {
   static const String learnerReport = '/reports/learner';
   static const String relationships = '/relationships';
   static const String inviteCollaborator = '/relationships/invite';
+  static const String specialistMessages = '/specialist/messages';
+  static const String chatThread = '/collaboration/chat';
 }
 
 
@@ -277,6 +281,24 @@ class AppRouter {
         return MaterialPageRoute(
           settings: settings,
           builder: (_) => const InviteCollaboratorScreen(),
+        );
+      case AppRoutes.specialistMessages:
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => const SpecialistMessagesScreen(showBottomNav: true),
+        );
+      case AppRoutes.chatThread:
+        final args = settings.arguments as Map<String, dynamic>? ?? {};
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => CollaborationChatScreen(
+            conversationId: args['conversation_id'] as String? ?? 'conv-default',
+            title: args['title'] as String? ?? 'Collaboration Thread',
+            subtitle: args['subtitle'] as String?,
+            targetLearnerId: args['target_learner_id'] as String?,
+            roles: (args['roles'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? const [],
+            isLocked: args['is_locked'] as bool? ?? false,
+          ),
         );
 
       default:

@@ -116,3 +116,64 @@ class AuditAccessEventResponse(BaseModel):
     created_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class SpecialistConversationResponse(BaseModel):
+    id: str
+    conversation_type: str = "group"  # "group" or "direct"
+    category: str = "teams"  # "teams" or "learners"
+    title: str
+    subtitle: str
+    roles: List[str] = []
+    last_message_sender: Optional[str] = None
+    last_message_text: str
+    last_message_time: str
+    unread_count: int = 0
+    is_pinned: bool = False
+    is_online: bool = False
+    consent_status: str = "verified"
+    is_locked: bool = False
+    lock_reason: Optional[str] = None
+    target_learner_id: Optional[str] = None
+    target_learner_name: Optional[str] = None
+    avatar_type: str = "single"  # "dual", "team_teal", "parent_online", "locked_child", "teacher_book"
+    avatar_badge: Optional[str] = None
+    participant_names: List[str] = []
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class ChatMessageAttachmentResponse(BaseModel):
+    id: str
+    filename: str
+    file_size_label: str
+    file_type: str = "pdf"
+    category_label: str = "Guided Practice"
+    download_url: Optional[str] = None
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class ChatMessageResponse(BaseModel):
+    id: str
+    conversation_id: str
+    sender_id: str
+    sender_name: str
+    sender_role: str
+    sender_role_label: Optional[str] = None
+    avatar_url: Optional[str] = None
+    avatar_initials: Optional[str] = None
+    content: str
+    timestamp: str
+    date_group: str = "Today"
+    is_self: bool = False
+    delivery_status: str = "delivered"
+    attachment: Optional[ChatMessageAttachmentResponse] = None
+    created_at: Optional[datetime] = None
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class ChatMessageCreateRequest(BaseModel):
+    content: str
+    attachment_id: Optional[str] = None

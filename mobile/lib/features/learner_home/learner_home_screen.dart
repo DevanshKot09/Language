@@ -45,6 +45,7 @@ class _LearnerHomeScreenState extends ConsumerState<LearnerHomeScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: const Text('Today'),
         actions: [
           IconButton(

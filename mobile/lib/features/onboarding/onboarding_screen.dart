@@ -36,20 +36,13 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     final session = ref.read(userSessionProvider);
     sessionNotifier.completeOnboarding();
 
-    switch (session.currentRole) {
-      case UserRole.parent:
-        Navigator.pushReplacementNamed(context, AppRoutes.parentDashboard);
-        break;
-      case UserRole.teacher:
-        Navigator.pushReplacementNamed(context, AppRoutes.teacherDashboard);
-        break;
-      case UserRole.specialist:
-        Navigator.pushReplacementNamed(context, AppRoutes.specialistDashboard);
-        break;
-      case UserRole.learner:
-        Navigator.pushReplacementNamed(context, AppRoutes.home);
-        break;
-    }
+    final destination = switch (session.currentRole) {
+      UserRole.parent => AppRoutes.parentDashboard,
+      UserRole.teacher => AppRoutes.teacherDashboard,
+      UserRole.specialist => AppRoutes.specialistDashboard,
+      UserRole.learner => AppRoutes.home,
+    };
+    Navigator.pushNamedAndRemoveUntil(context, destination, (route) => false);
   }
 
   void _nextPage() {

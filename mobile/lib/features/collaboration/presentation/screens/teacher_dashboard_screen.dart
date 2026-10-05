@@ -45,6 +45,7 @@ class _TeacherDashboardScreenState extends ConsumerState<TeacherDashboardScreen>
           alignment: Alignment.centerLeft,
           child: Text('Educator Workspace', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
         ),
+        automaticallyImplyLeading: false,
         backgroundColor: LinguaTokens.paper100,
         elevation: 0,
         actions: [
@@ -57,6 +58,11 @@ class _TeacherDashboardScreenState extends ConsumerState<TeacherDashboardScreen>
             icon: const Icon(Icons.description_outlined),
             tooltip: 'Reports',
             onPressed: () => Navigator.pushNamed(context, AppRoutes.learnerReport),
+          ),
+          IconButton(
+            icon: const Icon(Icons.settings_outlined),
+            tooltip: 'Settings',
+            onPressed: () => Navigator.pushNamed(context, AppRoutes.settings),
           ),
         ],
         bottom: TabBar(

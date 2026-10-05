@@ -353,3 +353,144 @@ def test_role_escalation_denied(client: TestClient, db_session: Session):
     # Learner attempting teacher endpoint -> 403 Forbidden
     teach_res = client.get("/api/v1/teacher/students", headers=headers)
     assert teach_res.status_code == 403
+
+
+def test_specialist_conversations_endpoint_and_consent_isolation(client: TestClient, db_session: Session):
+    # 1. Create Specialist, Parent, Teacher, and Learner
+    specialist = User(firebase_uid="spec_chat_1", email="spec_chat1@example.com", role="specialist", status="active")
+    parent = User(firebase_uid="parent_chat_1", email="parent_chat1@example.com", role="parent", status="active")
+    teacher = User(firebase_uid="teacher_chat_1", email="teacher_chat1@example.com", role="teacher", status="active")
+    learner_aarav = User(firebase_uid="learner_aarav", email="aarav@example.com", role="learner", status="active")
+    learner_sofia = User(firebase_uid="learner_sofia", email="sofia@example.com", role="learner", status="active")
+    unrelated_specialist = User(firebase_uid="spec_unrelated", email="spec_unrelated@example.com", role="specialist", status="active")
+
+    db_session.add_all([specialist, parent, teacher, learner_aarav, learner_sofia, unrelated_specialist])
+    db_session.commit()
+
+    db_session.add(Profile(user_id=specialist.id, display_name="Dr. Maya", age_band="adult", support_focus="dld_track"))
+    db_session.add(Profile(user_id=parent.id, display_name="Priya Mehta", age_band="adult", support_focus="dld_track"))
+    db_session.add(Profile(user_id=teacher.id, display_name="Mrs. Eleanor Davies", age_band="adult", support_focus="dld_track"))
+    db_session.add(Profile(user_id=learner_aarav.id, display_name="Aarav Sharma", age_band="child", support_focus="dld_track", guardian_consent_status="verified"))
+    db_session.add(Profile(user_id=learner_sofia.id, display_name="Sofia Patel", age_band="child", support_focus="dld_track", guardian_consent_status="pending"))
+    db_session.commit()
+
+    # Active relationships for Aarav
+    rel_spec_aarav = Relationship(
+        source_user_id=specialist.id,
+        target_user_id=learner_aarav.id,
+        relationship_type="specialist",
+        status="active",
+        permission_scope=json.dumps(["view_progress", "generate_support_report"]),
+        consent_status="verified",
+    )
+    rel_parent_aarav = Relationship(
+        source_user_id=parent.id,
+        target_user_id=learner_aarav.id,
+        relationship_type="parent",
+        status="active",
+        permission_scope=json.dumps(["manage_relationships"]),
+        consent_status="verified",
+    )
+    rel_teacher_aarav = Relationship(
+        source_user_id=teacher.id,
+        target_user_id=learner_aarav.id,
+        relationship_type="teacher",
+        status="active",
+        permission_scope=json.dumps(["view_progress", "create_assignment"]),
+        consent_status="verified",
+        organization="Oakridge Elementary",
+    )
+
+    # Active relationship for Sofia (but guardian consent is pending)
+    rel_spec_sofia = Relationship(
+        source_user_id=specialist.id,
+        target_user_id=learner_sofia.id,
+        relationship_type="specialist",
+        status="active",
+        permission_scope=json.dumps(["view_progress"]),
+        consent_status="pending",
+    )
+
+    db_session.add_all([rel_spec_aarav, rel_parent_aarav, rel_teacher_aarav, rel_spec_sofia])
+    db_session.commit()
+
+    headers_spec = auth_header(specialist.firebase_uid)
+
+    # 1. Query conversations for specialist
+    res = client.get("/api/v1/specialist/conversations", headers=headers_spec)
+    assert res.status_code == 200
+    convs = res.json()
+    assert len(convs) >= 3
+
+    # Check Aarav's support circle
+    aarav_conv = next(c for c in convs if "Aarav" in c["title"])
+    assert aarav_conv["is_pinned"] is True
+    assert aarav_conv["unread_count"] == 2
+    assert "Parent" in aarav_conv["roles"]
+    assert aarav_conv["avatar_type"] == "dual"
+
+    # Check Sofia's circle (consent pending locked state)
+    sofia_conv = next(c for c in convs if "Sofia" in c["title"])
+    assert sofia_conv["is_locked"] is True
+    assert sofia_conv["consent_status"] == "pending"
+    assert "locked until guardian sign-off" in sofia_conv["lock_reason"].lower()
+
+    # 2. Filter unread
+    res_unread = client.get("/api/v1/specialist/conversations?filter=unread", headers=headers_spec)
+    assert res_unread.status_code == 200
+    unread_convs = res_unread.json()
+    assert all(c["unread_count"] > 0 for c in unread_convs)
+
+    # 3. Search by name
+    res_search = client.get("/api/v1/specialist/conversations?search=Priya", headers=headers_spec)
+    assert res_search.status_code == 200
+    search_convs = res_search.json()
+    assert any("Priya" in c["title"] for c in search_convs)
+
+    # 4. Unrelated specialist sees zero conversations
+    headers_unrelated = auth_header(unrelated_specialist.firebase_uid)
+    res_empty = client.get("/api/v1/specialist/conversations", headers=headers_unrelated)
+    assert res_empty.status_code == 200
+    assert res_empty.json() == []
+
+    # 5. Non-specialist role (e.g. learner) gets 403 Forbidden
+    headers_learner = auth_header(learner_aarav.firebase_uid)
+    res_forbidden = client.get("/api/v1/specialist/conversations", headers=headers_learner)
+    assert res_forbidden.status_code == 403
+
+    # 6. Retrieve conversation messages for Aarav
+    res_msgs = client.get(f"/api/v1/specialist/conversations/{aarav_conv['id']}/messages", headers=headers_spec)
+    assert res_msgs.status_code == 200
+    msgs = res_msgs.json()
+    assert len(msgs) >= 4
+    # Outgoing specialist message has attachment
+    spec_msg = next(m for m in msgs if m["is_self"] is True)
+    assert spec_msg["sender_role"] == "specialist"
+    assert spec_msg["attachment"] is not None
+    assert "Phoneme_Pacing" in spec_msg["attachment"]["filename"]
+
+    # 7. Send new specialist message
+    send_res = client.post(
+        f"/api/v1/specialist/conversations/{aarav_conv['id']}/messages",
+        headers=headers_spec,
+        json={"content": "Looking forward to tomorrow's session at 10:30 AM!"},
+    )
+    assert send_res.status_code == 201
+    sent_data = send_res.json()
+    assert sent_data["content"] == "Looking forward to tomorrow's session at 10:30 AM!"
+    assert sent_data["is_self"] is True
+    assert sent_data["delivery_status"] == "delivered"
+
+    # Verify message is in the thread
+    res_msgs_after = client.get(f"/api/v1/specialist/conversations/{aarav_conv['id']}/messages", headers=headers_spec)
+    assert res_msgs_after.status_code == 200
+    assert len(res_msgs_after.json()) == len(msgs) + 1
+
+    # 8. Empty content returns 422
+    empty_res = client.post(
+        f"/api/v1/specialist/conversations/{aarav_conv['id']}/messages",
+        headers=headers_spec,
+        json={"content": "   "},
+    )
+    assert empty_res.status_code == 422
+

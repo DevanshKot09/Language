@@ -353,6 +353,7 @@ class _ParentDashboardScreenState extends ConsumerState<ParentDashboardScreen> {
       backgroundColor: LinguaTokens.paper50,
       appBar: AppBar(
         title: const Text('Parent Workspace', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+        automaticallyImplyLeading: false,
         backgroundColor: LinguaTokens.paper100,
         elevation: 0,
         actions: [

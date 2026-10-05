@@ -217,10 +217,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
         UserRole.teacher => AppRoutes.teacherDashboard,
         UserRole.specialist => AppRoutes.specialistDashboard,
       };
-      Navigator.pushReplacementNamed(context, destination);
+      Navigator.pushNamedAndRemoveUntil(context, destination, (route) => false);
     } else {
       // Unauthenticated users proceed to Get Started / Welcome
-      Navigator.pushReplacementNamed(context, AppRoutes.welcome);
+      Navigator.pushNamedAndRemoveUntil(context, AppRoutes.welcome, (route) => false);
     }
   }
 

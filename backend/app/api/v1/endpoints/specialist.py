@@ -7,7 +7,12 @@ from app.api.deps import require_role, get_current_user
 from app.models.user import User
 from app.models.profile import Profile
 from app.models.ai import Recommendation
-from app.schemas.collaboration import SpecialistAiReviewRequest
+from app.schemas.collaboration import (
+    SpecialistAiReviewRequest,
+    SpecialistConversationResponse,
+    ChatMessageResponse,
+    ChatMessageCreateRequest,
+)
 from app.schemas.progress import ProgressDashboardResponse
 from app.schemas.goal import GoalCreateRequest, GoalResponse
 from app.services.collaboration_service import CollaborationService
@@ -226,3 +231,61 @@ async def review_ai_recommendation(
         "human_reviewed": updated.human_reviewed,
         "human_reviewer_id": updated.human_reviewer_id,
     }
+
+
+@router.get("/conversations", response_model=List[SpecialistConversationResponse])
+async def get_specialist_conversations(
+    filter: Optional[str] = None,
+    search: Optional[str] = None,
+    current_user: User = Depends(require_role(["specialist", "admin"])),
+    db: Session = Depends(get_db),
+):
+    """
+    Returns authorized communication threads and collaboration groups for the specialist.
+    Enforces server-side RBAC and guardian consent rules.
+    Strictly non-diagnostic educational collaboration.
+    """
+    service = CollaborationService(db)
+    return service.get_specialist_conversations(
+        specialist_user=current_user,
+        filter_type=filter,
+        search=search,
+    )
+
+
+@router.get("/conversations/{conversation_id}/messages", response_model=List[ChatMessageResponse])
+async def get_conversation_messages(
+    conversation_id: str,
+    current_user: User = Depends(require_role(["specialist", "admin"])),
+    db: Session = Depends(get_db),
+):
+    """
+    Returns verified collaboration messages for the conversation thread.
+    Enforces specialist authorization and privacy rules.
+    """
+    service = CollaborationService(db)
+    return service.get_conversation_messages(
+        specialist_user=current_user,
+        conversation_id=conversation_id,
+    )
+
+
+@router.post("/conversations/{conversation_id}/messages", response_model=ChatMessageResponse, status_code=status.HTTP_201_CREATED)
+async def send_conversation_message(
+    conversation_id: str,
+    request: ChatMessageCreateRequest,
+    current_user: User = Depends(require_role(["specialist", "admin"])),
+    db: Session = Depends(get_db),
+):
+    """
+    Sends a new support guidance message into the conversation thread.
+    Enforces specialist role and non-empty content validation.
+    """
+    service = CollaborationService(db)
+    return service.send_conversation_message(
+        specialist_user=current_user,
+        conversation_id=conversation_id,
+        content=request.content,
+        attachment_id=request.attachment_id,
+    )
+

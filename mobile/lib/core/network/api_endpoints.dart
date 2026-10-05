@@ -59,5 +59,8 @@ class ApiEndpoints {
   static String reportPdf(String reportId) => '/api/v1/reports/$reportId/pdf';
   static const String specialists = '/api/v1/specialists';
   static const String parentAppointSpecialist = '/api/v1/parent/appoint-specialist';
+  static const String specialistConversations = '/api/v1/specialist/conversations';
+  static String specialistConversationMessages(String conversationId) =>
+      '/api/v1/specialist/conversations/$conversationId/messages';
 }
 

@@ -10,6 +10,7 @@ import '../../../../app/router/app_router.dart';
 import '../../application/collaboration_providers.dart';
 import '../../domain/models/collaboration_models.dart';
 import 'specialist_schedule_screen.dart';
+import 'specialist_messages_screen.dart';
 
 /// Specialist Dashboard Screen
 /// Faithfully reproduces the Stitch reference design for authorized Specialists.
@@ -2417,52 +2418,7 @@ class _SpecialistDashboardScreenState extends ConsumerState<SpecialistDashboardS
   // TAB 3: MESSAGES TAB
   // ---------------------------------------------------------------------------
   Widget _buildMessagesTab(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Specialist Messages',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: LinguaTokens.ink900),
-          ),
-          const SizedBox(height: 12),
-          LinguaAnimatedCard(
-            borderRadius: 16,
-            padding: const EdgeInsets.all(14),
-            child: Row(
-              children: [
-                const CircleAvatar(
-                  radius: 20,
-                  backgroundColor: Color(0xFFCCFBF1),
-                  child: Icon(Icons.person, color: Color(0xFF0D9488)),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
-                      Text(
-                        'Priya M. (Parent of Aarav)',
-                        style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13.5),
-                      ),
-                      SizedBox(height: 2),
-                      Text(
-                        'Reviewed the pacing game. Aarav enjoyed the /s/ blends!',
-                        style: TextStyle(fontSize: 12, color: Color(0xFF64748B)),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
-                  ),
-                ),
-                const Text('45m ago', style: TextStyle(fontSize: 11, color: Color(0xFF94A3B8))),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
+    return const SpecialistMessagesScreen(showBottomNav: false);
   }
 
   // ---------------------------------------------------------------------------
@@ -2554,10 +2510,29 @@ class _SpecialistDashboardScreenState extends ConsumerState<SpecialistDashboardS
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              isSelected ? activeIcon : icon,
-              color: isSelected ? primaryColor : unselectedColor,
-              size: 22,
+            Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Icon(
+                  isSelected ? activeIcon : icon,
+                  color: isSelected ? primaryColor : unselectedColor,
+                  size: 22,
+                ),
+                if (index == 3)
+                  Positioned(
+                    right: -3,
+                    top: -2,
+                    child: Container(
+                      width: 8,
+                      height: 8,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF2DD4BF),
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.white, width: 1.5),
+                      ),
+                    ),
+                  ),
+              ],
             ),
             const SizedBox(height: 2),
             FittedBox(
@@ -2805,6 +2780,17 @@ class _SpecialistDashboardScreenState extends ConsumerState<SpecialistDashboardS
                 onTap: () {
                   Navigator.pop(ctx);
                   Navigator.pushNamed(context, AppRoutes.settings);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.logout, color: LinguaTokens.danger600),
+                title: const Text('Sign Out', style: TextStyle(color: LinguaTokens.danger600, fontWeight: FontWeight.w600)),
+                onTap: () async {
+                  Navigator.pop(ctx);
+                  await ref.read(userSessionProvider.notifier).logout();
+                  if (context.mounted) {
+                    Navigator.pushNamedAndRemoveUntil(context, AppRoutes.welcome, (route) => false);
+                  }
                 },
               ),
             ],
