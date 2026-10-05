@@ -66,9 +66,5 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>Lingua AI uses your microphone only during speaking activities when you choose to answer using your voice. Audio is not saved without your permission.</string>
-	<key>NSSpeechRecognitionUsageDescription</key>
-	<string>Lingua AI converts your spoken answers into text on your device so you can review and practice without typing.</string>
 </dict>
 </plist>
