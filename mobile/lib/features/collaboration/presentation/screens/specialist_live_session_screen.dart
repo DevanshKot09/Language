@@ -2028,12 +2028,12 @@ class _SpecialistLiveSessionScreenState extends ConsumerState<SpecialistLiveSess
               ),
               const SizedBox(height: 20),
               ElevatedButton(
-                onPressed: () => Navigator.pushReplacementNamed(context, AppRoutes.roles),
+                onPressed: () => Navigator.pushReplacementNamed(context, AppRoutes.login),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: _primaryPurple,
                   foregroundColor: Colors.white,
                 ),
-                child: const Text('Switch Role'),
+                child: const Text('Return to Login'),
               ),
             ],
           ),

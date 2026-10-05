@@ -1,7 +1,6 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../shared/models/user_role.dart';
 import '../../app/providers/session_provider.dart';
 import '../../app/router/app_router.dart';
 
@@ -210,16 +209,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     final sessionState = ref.read(userSessionProvider);
 
     if (sessionState.isAuthenticated && sessionState.currentUser != null) {
-      // Direct authenticated users to their server-authoritative workspace
-      final destination = switch (sessionState.currentRole) {
-        UserRole.learner => AppRoutes.home,
-        UserRole.parent => AppRoutes.parentDashboard,
-        UserRole.teacher => AppRoutes.teacherDashboard,
-        UserRole.specialist => AppRoutes.specialistDashboard,
-      };
-      Navigator.pushNamedAndRemoveUntil(context, destination, (route) => false);
+      // Direct authenticated users to Specialist Dashboard
+      Navigator.pushNamedAndRemoveUntil(context, AppRoutes.specialistDashboard, (route) => false);
     } else {
-      // Unauthenticated users proceed to Get Started / Welcome
+      // Unauthenticated users proceed to Welcome
       Navigator.pushNamedAndRemoveUntil(context, AppRoutes.welcome, (route) => false);
     }
   }

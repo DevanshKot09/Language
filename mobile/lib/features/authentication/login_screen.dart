@@ -86,17 +86,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   void _navigateToRoleDashboard(UserSessionState session) {
-    if (!session.isOnboardingCompleted) {
-      Navigator.pushNamedAndRemoveUntil(context, AppRoutes.onboarding, (route) => false);
-      return;
-    }
-    final destination = switch (session.currentRole) {
-      UserRole.parent => AppRoutes.parentDashboard,
-      UserRole.teacher => AppRoutes.teacherDashboard,
-      UserRole.specialist => AppRoutes.specialistDashboard,
-      UserRole.learner => AppRoutes.home,
-    };
-    Navigator.pushNamedAndRemoveUntil(context, destination, (route) => false);
+    Navigator.pushNamedAndRemoveUntil(context, AppRoutes.specialistDashboard, (route) => false);
   }
 
   Future<void> _handleGoogleSignIn() async {

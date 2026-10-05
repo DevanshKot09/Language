@@ -155,23 +155,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
           );
 
       if (!mounted) return;
-
-      final updatedSession = ref.read(userSessionProvider);
-      if (!updatedSession.isOnboardingCompleted) {
-        if (updatedSession.currentRole == UserRole.learner) {
-          Navigator.pushNamedAndRemoveUntil(context, AppRoutes.ageMode, (route) => false);
-        } else {
-          Navigator.pushNamedAndRemoveUntil(context, AppRoutes.onboarding, (route) => false);
-        }
-      } else {
-        final destination = switch (updatedSession.currentRole) {
-          UserRole.parent => AppRoutes.parentDashboard,
-          UserRole.teacher => AppRoutes.teacherDashboard,
-          UserRole.specialist => AppRoutes.specialistDashboard,
-          UserRole.learner => AppRoutes.home,
-        };
-        Navigator.pushNamedAndRemoveUntil(context, destination, (route) => false);
-      }
+      Navigator.pushNamedAndRemoveUntil(context, AppRoutes.specialistDashboard, (route) => false);
     } catch (e) {
       if (mounted) {
         final sessionErr = ref.read(userSessionProvider).errorMessage;
@@ -194,15 +178,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
       await ref.read(userSessionProvider.notifier).signInWithGoogle();
 
       if (!mounted) return;
-
-      final updatedSession = ref.read(userSessionProvider);
-      final destination = switch (updatedSession.currentRole) {
-        UserRole.parent => AppRoutes.parentDashboard,
-        UserRole.teacher => AppRoutes.teacherDashboard,
-        UserRole.specialist => AppRoutes.specialistDashboard,
-        UserRole.learner => AppRoutes.home,
-      };
-      Navigator.pushReplacementNamed(context, destination);
+      Navigator.pushNamedAndRemoveUntil(context, AppRoutes.specialistDashboard, (route) => false);
     } catch (e) {
       if (mounted) {
         final sessionErr = ref.read(userSessionProvider).errorMessage;

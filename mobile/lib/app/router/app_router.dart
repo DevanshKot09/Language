@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../features/welcome/splash_screen.dart';
 import '../../features/welcome/welcome_screen.dart';
-import '../../features/role_selection/role_selection_screen.dart';
-import '../../features/age_selection/age_selection_screen.dart';
-import '../../features/onboarding/onboarding_screen.dart';
 import '../../features/authentication/login_screen.dart';
 import '../../features/authentication/signup_screen.dart';
 import '../../features/authentication/forgot_password_screen.dart';
@@ -44,9 +41,6 @@ import '../../features/collaboration/presentation/screens/specialist_live_sessio
 class AppRoutes {
   static const String splash = '/splash';
   static const String welcome = '/';
-  static const String roles = '/roles';
-  static const String ageMode = '/age-mode';
-  static const String onboarding = '/onboarding';
   static const String login = '/login';
   static const String signup = '/signup';
   static const String forgotPassword = '/forgot-password';
@@ -101,21 +95,6 @@ class AppRouter {
         return MaterialPageRoute(
           settings: settings,
           builder: (_) => const WelcomeScreen(),
-        );
-      case AppRoutes.roles:
-        return MaterialPageRoute(
-          settings: settings,
-          builder: (_) => const RoleSelectionScreen(),
-        );
-      case AppRoutes.ageMode:
-        return MaterialPageRoute(
-          settings: settings,
-          builder: (_) => const AgeSelectionScreen(),
-        );
-      case AppRoutes.onboarding:
-        return MaterialPageRoute(
-          settings: settings,
-          builder: (_) => const OnboardingScreen(),
         );
       case AppRoutes.login:
         return MaterialPageRoute(
