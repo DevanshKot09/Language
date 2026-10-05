@@ -11,7 +11,6 @@ from app.models.learning import Lesson, Exercise, ExerciseAttempt, UserLessonPro
 from app.models.goal import LearnerGoal
 from app.models.achievement import AchievementDefinition, UserAchievement
 from app.repositories.goal_repository import GoalRepository
-from app.services.achievement_service import AchievementService
 from app.schemas.progress import (
     ProgressDashboardResponse,
     ProgressSummary,
@@ -46,8 +45,6 @@ class ProgressService:
         Derives all metrics strictly from stored application events.
         Maintains independent representation for DLD (spoken language) and Dyslexia (literacy).
         """
-        # 1. Evaluate any eligible achievements first to ensure up-to-date milestone state
-        AchievementService.evaluate_and_unlock(db, user.id)
 
         # 2. Activity metrics
         completed_lessons_count = (
@@ -134,13 +131,9 @@ class ProgressService:
         completed_goals = [g for g in user_goals if g.status in ("completed", "achieved")]
 
         # 5. Achievements
-        all_achievements = AchievementService.get_all_achievements_for_user(db, user.id)
-        unlocked_achievements = [a for a in all_achievements if a.is_unlocked]
-        recent_achievements = sorted(
-            unlocked_achievements,
-            key=lambda x: _to_utc(x.unlocked_at) or datetime.min.replace(tzinfo=timezone.utc),
-            reverse=True,
-        )[:3]
+        all_achievements = []
+        unlocked_achievements = []
+        recent_achievements = []
 
         # 6. Skill Progress (Separation of DLD and Dyslexia)
         all_skills = db.query(Skill).filter(Skill.active == True).all()

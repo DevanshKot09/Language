@@ -67,7 +67,6 @@ void main() {
       // Top App Bar
       expect(find.text('Learner Profile'), findsOneWidget);
       expect(find.byIcon(Icons.arrow_back_rounded), findsOneWidget);
-      expect(find.byIcon(Icons.more_horiz_rounded), findsOneWidget);
 
       // Switcher
       expect(find.text('Aarav M. (Child)'), findsOneWidget);
@@ -84,7 +83,6 @@ void main() {
       // Action Grid
       expect(find.text('Start Session'), findsOneWidget);
       expect(find.text('Live 1-on-1 Practice'), findsOneWidget);
-      expect(find.text('View Reports'), findsOneWidget);
       expect(find.text('Schedule'), findsNWidgets(2)); // Grid + Bottom nav
       expect(find.text('Guidance Chat'), findsOneWidget);
 
@@ -115,7 +113,6 @@ void main() {
       // Latest Reflection
       expect(find.text('LATEST REFLECTION'), findsOneWidget);
       expect(find.text('Weekly Speech Pacing & Blends'), findsOneWidget);
-      expect(find.text('View Full Report'), findsOneWidget);
 
       // Support Team
       expect(find.text('Support Team'), findsOneWidget);

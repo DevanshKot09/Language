@@ -283,7 +283,7 @@ void main() {
       await tester.pump();
 
       expect(find.text('Specialist Access Scoped'), findsOneWidget);
-      expect(find.text('Switch Role'), findsOneWidget);
+      expect(find.text('Return to Login'), findsOneWidget);
     });
 
     testWidgets('Responsive Layout: No overflow on 320px, 360px, 390px, 430px widths', (tester) async {

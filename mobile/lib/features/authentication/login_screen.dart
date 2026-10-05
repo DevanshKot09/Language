@@ -1,7 +1,6 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../shared/models/user_role.dart';
 import '../../app/providers/session_provider.dart';
 import '../../app/router/app_router.dart';
 import 'forgot_password_screen.dart';

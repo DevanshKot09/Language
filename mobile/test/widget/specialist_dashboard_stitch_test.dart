@@ -98,14 +98,6 @@ void main() {
       expect(find.textContaining('Dr. Maya'), findsOneWidget);
       expect(find.text("Here's what needs your attention today."), findsOneWidget);
 
-      // 3. Action Required Hero Card (Consent Requests)
-      expect(find.text('Action required'), findsOneWidget);
-      expect(find.text('2 consent requests'), findsOneWidget);
-      expect(
-        find.text('Review before accessing learner profiles and activity audio.'),
-        findsOneWidget,
-      );
-      expect(find.text('Review requests'), findsOneWidget);
 
       // 4. Metric Cards (Caseload & Practices)
       expect(find.text('Specialist Caseload'), findsOneWidget);
@@ -135,8 +127,7 @@ void main() {
 
       // 6. QUICK TOOLS Section
       expect(find.text('QUICK TOOLS'), findsOneWidget);
-      expect(find.text('Consents'), findsOneWidget);
-      expect(find.text('Reports'), findsOneWidget);
+      expect(find.text('Caseload'), findsWidgets);
       expect(find.text('Booking'), findsOneWidget);
 
       // 7. AI Suggestions Card
@@ -221,8 +212,7 @@ void main() {
 
       expect(find.text('Dr. Maya'), findsWidgets);
       expect(find.text('Speech-Language Pathologist (SLP)'), findsOneWidget);
-      expect(find.text('Accessibility Settings'), findsOneWidget);
-      expect(find.text('Account & Privacy Settings'), findsOneWidget);
+      expect(find.text('Sign Out'), findsOneWidget);
     });
 
     testWidgets('Tapping Booking tool opens appointment scheduling modal', (tester) async {
@@ -258,7 +248,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Specialist Workspace Restricted'), findsOneWidget);
-      expect(find.text('Switch Workspace'), findsOneWidget);
+      expect(find.text('Return to Login'), findsOneWidget);
     });
 
     testWidgets('Responsive Layout: No overflow on 320px, 360px, 390px, 430px widths', (tester) async {

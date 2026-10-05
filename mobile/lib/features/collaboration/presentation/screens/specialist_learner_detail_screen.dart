@@ -151,26 +151,6 @@ class _SpecialistLearnerDetailScreenState
             ),
           ),
 
-          // More Options Button
-          InkWell(
-            onTap: () => _showMoreOptionsSheet(context),
-            borderRadius: BorderRadius.circular(18),
-            child: Container(
-              width: 36,
-              height: 36,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                shape: BoxShape.circle,
-                border: Border.all(color: const Color(0xFFE2E8F0)),
-              ),
-              child: const Icon(
-                Icons.more_horiz_rounded,
-                size: 19,
-                color: Color(0xFF475569),
-              ),
-            ),
-          ),
-          const SizedBox(width: 8),
 
           // Specialist Avatar Icon
           Container(

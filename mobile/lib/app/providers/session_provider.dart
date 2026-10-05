@@ -321,15 +321,6 @@ class UserSessionNotifier extends Notifier<UserSessionState> {
       await authRepo.signOut();
     } finally {
       state = const UserSessionState(status: SessionStatus.unauthenticated);
-      // Invalidate user-scoped providers to guarantee complete state isolation on logout
-      ref.invalidate(relationshipsProvider);
-      ref.invalidate(invitationsProvider);
-      ref.invalidate(parentChildrenProvider);
-      ref.invalidate(teacherStudentsProvider);
-      ref.invalidate(teacherAssignmentsProvider);
-      ref.invalidate(teacherClassroomTrendsProvider);
-      ref.invalidate(specialistCaseloadProvider);
-      ref.invalidate(progressDashboardProvider);
     }
   }
 

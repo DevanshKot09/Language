@@ -1,8 +1,6 @@
 import 'package:lingua_ai/core/network/api_client.dart';
 import 'package:lingua_ai/core/network/api_endpoints.dart';
 import 'package:lingua_ai/features/collaboration/domain/models/collaboration_models.dart';
-import 'package:lingua_ai/features/progress/domain/models/progress_models.dart';
-import 'package:lingua_ai/features/progress/domain/models/goal_models.dart';
 
 abstract class ICollaborationRepository {
   Future<List<RelationshipItem>> getRelationships();
@@ -20,7 +18,6 @@ abstract class ICollaborationRepository {
 
   // Parent Workspace
   Future<List<ParentChildItem>> getParentChildren();
-  Future<ProgressDashboardData> getChildProgress(String childId);
   Future<List<Map<String, dynamic>>> getAvailableSpecialists();
   Future<Map<String, dynamic>> appointSpecialist({
     required String childId,
@@ -48,14 +45,6 @@ abstract class ICollaborationRepository {
   // Specialist Workspace
   Future<List<SpecialistCaseloadItem>> getSpecialistCaseload();
   Future<Map<String, dynamic>> getSpecialistLearnerDetail(String learnerId);
-  Future<LearnerGoal> createSpecialistGoal(
-    String learnerId, {
-    required String title,
-    required String description,
-    required String goalType,
-    required int targetCount,
-    String? skillId,
-  });
   Future<void> reviewAiRecommendation(
     String recId, {
     required String humanStatus,
@@ -167,11 +156,6 @@ class CollaborationRepository implements ICollaborationRepository {
     return [];
   }
 
-  @override
-  Future<ProgressDashboardData> getChildProgress(String childId) async {
-    final response = await _apiClient.get(ApiEndpoints.parentChildProgress(childId));
-    return ProgressDashboardData.fromJson(response as Map<String, dynamic>);
-  }
 
   @override
   Future<List<TeacherStudentItem>> getTeacherStudents() async {
@@ -240,28 +224,6 @@ class CollaborationRepository implements ICollaborationRepository {
     return response as Map<String, dynamic>;
   }
 
-  @override
-  Future<LearnerGoal> createSpecialistGoal(
-    String learnerId, {
-    required String title,
-    required String description,
-    required String goalType,
-    required int targetCount,
-    String? skillId,
-  }) async {
-    final body = <String, dynamic>{
-      'title': title,
-      'description': description,
-      'goal_type': goalType,
-      'target_count': targetCount,
-      'skill_id': ?skillId,
-    };
-    final response = await _apiClient.post(
-      ApiEndpoints.specialistLearnerGoals(learnerId),
-      body: body,
-    );
-    return LearnerGoal.fromJson(response as Map<String, dynamic>);
-  }
 
   @override
   Future<void> reviewAiRecommendation(

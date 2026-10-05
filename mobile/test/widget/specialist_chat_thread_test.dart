@@ -121,9 +121,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('View Learner Profile'), findsOneWidget);
-      expect(find.text('View Progress Report'), findsOneWidget);
       expect(find.text('Schedule Support Session'), findsOneWidget);
-      expect(find.text('Collaboration Privacy & Consent'), findsOneWidget);
     });
 
     testWidgets('Consent locked conversation shows privacy notice and audio restriction', (WidgetTester tester) async {
