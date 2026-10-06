@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lingua_ai/app/router/app_router.dart';
 import 'package:lingua_ai/features/collaboration/application/collaboration_providers.dart';
+import 'package:lingua_ai/features/error_state/error_state_type.dart';
+import 'package:lingua_ai/features/error_state/error_state_view.dart';
 
 /// Specialist's detailed overview of a single learner.
 /// Recreated faithfully from the LINGUA AI Specialist -> Learner Profile Stitch design.
@@ -63,6 +65,16 @@ class _SpecialistLearnerDetailScreenState
   Widget build(BuildContext context) {
     final detailAsync = ref.watch(specialistLearnerDetailProvider(_activeLearnerId));
 
+    if (detailAsync.hasError && !detailAsync.hasValue) {
+      return ErrorStateView(
+        type: ErrorStateTypeX.fromError(detailAsync.error),
+        message: detailAsync.error?.toString(),
+        onRetry: () {
+          ref.invalidate(specialistLearnerDetailProvider(_activeLearnerId));
+        },
+      );
+    }
+
     return Scaffold(
       backgroundColor: const Color(0xFFF8F7FF),
       body: SafeArea(
@@ -76,7 +88,7 @@ class _SpecialistLearnerDetailScreenState
             Expanded(
               child: detailAsync.when(
                 loading: () => _buildLoadingSkeleton(),
-                error: (err, _) => _buildErrorState(err.toString()),
+                error: (err, _) => _buildErrorState(err),
                 data: (backendData) => _buildProfileBody(context, backendData),
               ),
             ),
@@ -1762,39 +1774,14 @@ class _SpecialistLearnerDetailScreenState
     );
   }
 
-  Widget _buildErrorState(String message) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.cloud_off_rounded, size: 48, color: Color(0xFF94A3B8)),
-            const SizedBox(height: 12),
-            const Text(
-              'Could not load learner profile',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              message,
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 12, color: Color(0xFF64748B)),
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () {
-                ref.invalidate(specialistLearnerDetailProvider(_activeLearnerId));
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF4F46E5),
-                foregroundColor: Colors.white,
-              ),
-              child: const Text('Try Again'),
-            ),
-          ],
-        ),
-      ),
+  Widget _buildErrorState(Object? error) {
+    return ErrorStateView(
+      type: ErrorStateTypeX.fromError(error),
+      message: error?.toString(),
+      onRetry: () {
+        ref.invalidate(specialistLearnerDetailProvider(_activeLearnerId));
+      },
+      isFullScreen: false,
     );
   }
 }

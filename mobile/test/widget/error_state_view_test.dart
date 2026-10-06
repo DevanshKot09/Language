@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lingua_ai/app/providers/session_provider.dart';
 import 'package:lingua_ai/app/router/app_router.dart';
+import 'package:lingua_ai/features/collaboration/application/collaboration_providers.dart';
 import 'package:lingua_ai/features/error_state/error_state_type.dart';
 import 'package:lingua_ai/features/error_state/error_state_view.dart';
 import 'package:lingua_ai/shared/models/auth_user.dart';
@@ -37,6 +38,9 @@ void main() {
             ),
           ),
         ),
+        specialistCaseloadProvider.overrideWith((ref) => Future.value([])),
+        relationshipsProvider.overrideWith((ref) => Future.value([])),
+        invitationsProvider.overrideWith((ref) => Future.value([])),
       ],
       child: MaterialApp(
         onGenerateRoute: AppRouter.generateRoute,
@@ -128,7 +132,8 @@ void main() {
       await tester.pump();
 
       await tester.tap(find.byKey(const Key('error_state_go_home_primary_button')));
-      await tester.pumpAndSettle();
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
 
       // Should land on specialist dashboard
       expect(find.text('Lingua AI'), findsWidgets);

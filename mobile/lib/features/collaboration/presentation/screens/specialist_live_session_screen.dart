@@ -5,6 +5,8 @@ import '../../../../app/providers/session_provider.dart';
 import '../../../../app/router/app_router.dart';
 import '../../../../shared/models/user_role.dart';
 import '../../domain/models/collaboration_models.dart';
+import 'package:lingua_ai/features/error_state/error_state_type.dart';
+import 'package:lingua_ai/features/error_state/error_state_view.dart';
 
 /// Specialist — Live Support Session Screen.
 ///
@@ -39,6 +41,7 @@ enum _SessionLifecycle {
   active,
   ending,
   completed,
+  error,
 }
 
 class _SpecialistLiveSessionScreenState extends ConsumerState<SpecialistLiveSessionScreen> {
@@ -216,6 +219,24 @@ class _SpecialistLiveSessionScreenState extends ConsumerState<SpecialistLiveSess
         );
       case _SessionLifecycle.completed:
         return _buildSessionCompletedView();
+      case _SessionLifecycle.error:
+        return ErrorStateView(
+          type: ErrorStateType.serverError,
+          title: 'Live Session Disconnected',
+          message: 'Unable to connect to the live support channel. Please check your connection and try again.',
+          onRetry: () {
+            setState(() {
+              _lifecycle = _SessionLifecycle.connecting;
+            });
+            Future.delayed(const Duration(milliseconds: 800), () {
+              if (mounted) {
+                setState(() {
+                  _lifecycle = _SessionLifecycle.active;
+                });
+              }
+            });
+          },
+        );
     }
   }
 

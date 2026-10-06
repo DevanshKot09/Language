@@ -104,7 +104,6 @@ class _VoltECharacterPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final w = size.width;
-    final h = size.height;
     final s = w / 220.0; // scale factor relative to 220 design canvas
 
     // Palette tokens

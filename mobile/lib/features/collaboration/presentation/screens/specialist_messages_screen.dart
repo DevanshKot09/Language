@@ -5,6 +5,8 @@ import 'package:lingua_ai/app/router/app_router.dart';
 import 'package:lingua_ai/core/widgets/lingua_skeleton.dart';
 import 'package:lingua_ai/features/collaboration/application/collaboration_providers.dart';
 import 'package:lingua_ai/features/collaboration/domain/models/collaboration_models.dart';
+import 'package:lingua_ai/features/error_state/error_state_type.dart';
+import 'package:lingua_ai/features/error_state/error_state_view.dart';
 
 /// Specialist – Messages & Collaboration Screen
 ///
@@ -81,6 +83,15 @@ class _SpecialistMessagesScreenState extends ConsumerState<SpecialistMessagesScr
 
     final conversationsAsync = ref.watch(specialistConversationsProvider(query));
 
+    if (conversationsAsync.hasError && !conversationsAsync.hasValue) {
+      return ErrorStateView(
+        type: ErrorStateTypeX.fromError(conversationsAsync.error),
+        message: conversationsAsync.error?.toString(),
+        onRetry: () => ref.invalidate(specialistConversationsProvider(query)),
+        isFullScreen: widget.showBottomNav,
+      );
+    }
+
     return Scaffold(
       backgroundColor: _bg,
       body: SafeArea(
@@ -102,7 +113,7 @@ class _SpecialistMessagesScreenState extends ConsumerState<SpecialistMessagesScr
               child: conversationsAsync.when(
                 data: (conversations) => _buildConversationList(context, conversations),
                 loading: () => _buildLoadingSkeleton(),
-                error: (err, _) => _buildErrorState(err.toString(), () {
+                error: (err, _) => _buildErrorState(err, () {
                   ref.invalidate(specialistConversationsProvider(query));
                 }),
               ),
@@ -1289,41 +1300,12 @@ class _SpecialistMessagesScreenState extends ConsumerState<SpecialistMessagesScr
     );
   }
 
-  Widget _buildErrorState(String message, VoidCallback onRetry) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(28),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.error_outline_rounded, color: Color(0xFFEF4444), size: 44),
-            const SizedBox(height: 12),
-            const Text(
-              'Unable to load conversations',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: _inkDark),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              message.contains('SocketException')
-                  ? 'Network unreachable. Please check your internet connection.'
-                  : 'An error occurred while loading specialist conversations.',
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 12.5, color: _muted),
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton.icon(
-              onPressed: onRetry,
-              icon: const Icon(Icons.refresh_rounded, size: 16),
-              label: const Text('Try Again'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: _primary,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              ),
-            ),
-          ],
-        ),
-      ),
+  Widget _buildErrorState(Object? error, VoidCallback onRetry) {
+    return ErrorStateView(
+      type: ErrorStateTypeX.fromError(error),
+      message: error?.toString(),
+      onRetry: onRetry,
+      isFullScreen: false,
     );
   }
 

@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../app/router/app_router.dart';
 import '../../application/collaboration_providers.dart';
 import '../../domain/models/collaboration_models.dart';
+import 'package:lingua_ai/features/error_state/error_state_type.dart';
+import 'package:lingua_ai/features/error_state/error_state_view.dart';
 
 /// Specialist Schedule & Appointments screen (Stitch reference).
 ///
@@ -64,6 +66,15 @@ class _SpecialistScheduleScreenState extends ConsumerState<SpecialistScheduleScr
   Widget build(BuildContext context) {
     final scheduleAsync = ref.watch(specialistScheduleProvider);
 
+    if (scheduleAsync.hasError && !scheduleAsync.hasValue) {
+      return ErrorStateView(
+        type: ErrorStateTypeX.fromError(scheduleAsync.error),
+        message: scheduleAsync.error?.toString(),
+        onRetry: () => ref.invalidate(specialistScheduleProvider),
+        isFullScreen: widget.showBottomNav,
+      );
+    }
+
     final body = SafeArea(
       bottom: false,
       child: RefreshIndicator(
@@ -74,7 +85,7 @@ class _SpecialistScheduleScreenState extends ConsumerState<SpecialistScheduleScr
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
           child: scheduleAsync.when(
             loading: () => _buildLoading(),
-            error: (_, _) => _buildError(),
+            error: (err, _) => _buildError(err),
             data: (sessions) => _buildContent(sessions),
           ),
         ),
@@ -919,34 +930,15 @@ class _SpecialistScheduleScreenState extends ConsumerState<SpecialistScheduleScr
     );
   }
 
-  Widget _buildError() {
-    return Column(
+  Widget _buildError([Object? error]) {
+    return KeyedSubtree(
       key: const Key('schedule_error'),
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        _buildHeader(),
-        const SizedBox(height: 40),
-        const Icon(Icons.cloud_off_rounded, size: 40, color: Color(0xFF94A3B8)),
-        const SizedBox(height: 12),
-        const Text("We couldn't load your schedule",
-            textAlign: TextAlign.center, style: TextStyle(fontSize: 15.5, fontWeight: FontWeight.w800, color: _ink)),
-        const SizedBox(height: 4),
-        const Text('Please check your connection and try again.',
-            textAlign: TextAlign.center, style: TextStyle(fontSize: 12.5, color: _muted)),
-        const SizedBox(height: 16),
-        Center(
-          child: ElevatedButton(
-            onPressed: () => ref.invalidate(specialistScheduleProvider),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: _primary,
-              foregroundColor: Colors.white,
-              minimumSize: const Size(140, 46),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(23)),
-            ),
-            child: const Text('Try Again', style: TextStyle(fontWeight: FontWeight.w700)),
-          ),
-        ),
-      ],
+      child: ErrorStateView(
+        type: ErrorStateTypeX.fromError(error),
+        message: error?.toString(),
+        onRetry: () => ref.invalidate(specialistScheduleProvider),
+        isFullScreen: false,
+      ),
     );
   }
 

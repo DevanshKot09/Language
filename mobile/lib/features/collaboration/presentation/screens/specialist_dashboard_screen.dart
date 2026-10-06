@@ -9,6 +9,8 @@ import '../../../../app/providers/session_provider.dart';
 import '../../../../app/router/app_router.dart';
 import '../../application/collaboration_providers.dart';
 import '../../domain/models/collaboration_models.dart';
+import 'package:lingua_ai/features/error_state/error_state_type.dart';
+import 'package:lingua_ai/features/error_state/error_state_view.dart';
 import 'specialist_schedule_screen.dart';
 import 'specialist_messages_screen.dart';
 
@@ -83,6 +85,23 @@ class _SpecialistDashboardScreenState extends ConsumerState<SpecialistDashboardS
     final caseloadAsync = ref.watch(specialistCaseloadProvider);
     final relationshipsAsync = ref.watch(relationshipsProvider);
     final invitationsAsync = ref.watch(invitationsProvider);
+
+    // Initial load failure check (only when no data is available to display)
+    final hasNoCaseloadData = !caseloadAsync.hasValue;
+    final hasNoRelationshipsData = !relationshipsAsync.hasValue;
+    final bothFailed = caseloadAsync.hasError && relationshipsAsync.hasError;
+
+    if (bothFailed && hasNoCaseloadData && hasNoRelationshipsData) {
+      return ErrorStateView(
+        type: ErrorStateTypeX.fromError(caseloadAsync.error ?? relationshipsAsync.error),
+        message: caseloadAsync.error?.toString(),
+        onRetry: () {
+          ref.invalidate(specialistCaseloadProvider);
+          ref.invalidate(relationshipsProvider);
+          ref.invalidate(invitationsProvider);
+        },
+      );
+    }
 
     // Role-based security check
     if (session.isAuthenticated && session.currentRole != UserRole.specialist) {
@@ -1306,6 +1325,17 @@ class _SpecialistDashboardScreenState extends ConsumerState<SpecialistDashboardS
     BuildContext context,
     AsyncValue<List<SpecialistCaseloadItem>> caseloadAsync,
   ) {
+    if (caseloadAsync.hasError && !caseloadAsync.hasValue) {
+      return ErrorStateView(
+        type: ErrorStateTypeX.fromError(caseloadAsync.error),
+        message: caseloadAsync.error?.toString(),
+        onRetry: () {
+          ref.invalidate(specialistCaseloadProvider);
+        },
+        isFullScreen: false,
+      );
+    }
+
     final backendItems = caseloadAsync.asData?.value;
     final allLearners = _resolveCaseloadList(context, backendItems);
 

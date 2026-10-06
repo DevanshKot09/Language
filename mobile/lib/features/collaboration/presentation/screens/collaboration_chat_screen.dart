@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../app/router/app_router.dart';
 import '../../application/collaboration_providers.dart';
 import '../../domain/models/collaboration_models.dart';
+import 'package:lingua_ai/features/error_state/error_state_type.dart';
+import 'package:lingua_ai/features/error_state/error_state_view.dart';
 
 /// Conversation Detail / Collaboration Chat Thread Screen
 ///
@@ -1307,42 +1309,13 @@ class _CollaborationChatScreenState extends ConsumerState<CollaborationChatScree
   }
 
   Widget _buildErrorState(String message) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(28),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.error_outline_rounded, color: Color(0xFFEF4444), size: 44),
-            const SizedBox(height: 12),
-            const Text(
-              'Unable to load conversation messages',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: _inkDark),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              message.contains('SocketException')
-                  ? 'Network unreachable. Please check your connection.'
-                  : 'An error occurred while loading this chat thread.',
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 12.5, color: _muted),
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton.icon(
-              onPressed: () {
-                ref.read(chatThreadNotifierProvider(widget.conversationId).notifier).loadMessages();
-              },
-              icon: const Icon(Icons.refresh_rounded, size: 16),
-              label: const Text('Try Again'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: _primaryPurple,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              ),
-            ),
-          ],
-        ),
-      ),
+    return ErrorStateView(
+      type: ErrorStateTypeX.fromError(message),
+      message: message,
+      onRetry: () {
+        ref.read(chatThreadNotifierProvider(widget.conversationId).notifier).loadMessages();
+      },
+      isFullScreen: false,
     );
   }
 }
