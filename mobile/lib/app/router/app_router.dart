@@ -18,6 +18,8 @@ import '../../features/collaboration/presentation/screens/specialist_availabilit
 import '../../features/collaboration/presentation/screens/specialist_verification_screen.dart';
 import '../../features/collaboration/presentation/screens/specialist_help_support_screen.dart';
 import '../../features/collaboration/presentation/screens/specialist_settings_screen.dart';
+import '../../features/error_state/error_state_type.dart';
+import '../../features/error_state/error_state_view.dart';
 
 /// Central route constants for LINGUA AI.
 class AppRoutes {
@@ -162,14 +164,13 @@ class AppRouter {
         );
 
       default:
-
         return MaterialPageRoute(
           settings: settings,
-          builder: (_) => Scaffold(
-            appBar: AppBar(title: const Text('Page Not Found')),
-            body: Center(
-              child: Text('Route not found: ${settings.name}'),
-            ),
+          builder: (_) => ErrorStateView(
+            type: ErrorStateType.notFound,
+            message: settings.name != null && settings.name!.isNotEmpty
+                ? 'The route "${settings.name}" is not available.'
+                : null,
           ),
         );
     }
