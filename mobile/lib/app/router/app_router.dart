@@ -10,6 +10,14 @@ import '../../features/collaboration/presentation/screens/specialist_schedule_sc
 import '../../features/collaboration/presentation/screens/specialist_messages_screen.dart';
 import '../../features/collaboration/presentation/screens/collaboration_chat_screen.dart';
 import '../../features/collaboration/presentation/screens/specialist_live_session_screen.dart';
+import '../../features/collaboration/presentation/screens/specialist_session_summary_screen.dart';
+import '../../features/collaboration/presentation/screens/specialist_profile_screen.dart';
+import '../../features/collaboration/presentation/screens/specialist_notifications_screen.dart';
+import '../../features/collaboration/presentation/screens/specialist_consent_sharing_screen.dart';
+import '../../features/collaboration/presentation/screens/specialist_availability_screen.dart';
+import '../../features/collaboration/presentation/screens/specialist_verification_screen.dart';
+import '../../features/collaboration/presentation/screens/specialist_help_support_screen.dart';
+import '../../features/collaboration/presentation/screens/specialist_settings_screen.dart';
 
 /// Central route constants for LINGUA AI.
 class AppRoutes {
@@ -26,6 +34,16 @@ class AppRoutes {
   static const String specialistMessages = '/specialist/messages';
   static const String chatThread = '/collaboration/chat';
   static const String specialistLiveSession = '/specialist/live-session';
+  static const String specialistSessionSummary = '/specialist/session-summary';
+  static const String specialistProfile = '/specialist/profile';
+  static const String specialistNotifications = '/specialist/notifications';
+  static const String specialistConsentSharing = '/specialist/consent-sharing';
+  static const String specialistAvailabilitySettings =
+      '/specialist/availability-settings';
+  static const String specialistVerificationStatus =
+      '/specialist/verification-status';
+  static const String specialistHelpSupport = '/specialist/help-support';
+  static const String specialistSettings = '/specialist/settings';
 }
 
 /// Central route generator for LINGUA AI.
@@ -99,6 +117,48 @@ class AppRouter {
           builder: (_) => SpecialistLiveSessionScreen(
             sessionOrLearner: settings.arguments,
           ),
+        );
+      case AppRoutes.specialistSessionSummary:
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => SpecialistSessionSummaryScreen(
+            sessionOrSummary: settings.arguments,
+          ),
+        );
+      case AppRoutes.specialistProfile:
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => const SpecialistProfileScreen(),
+        );
+      case AppRoutes.specialistNotifications:
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => const SpecialistNotificationsScreen(),
+        );
+      case AppRoutes.specialistConsentSharing:
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => const SpecialistConsentSharingScreen(),
+        );
+      case AppRoutes.specialistAvailabilitySettings:
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => const SpecialistAvailabilityScreen(),
+        );
+      case AppRoutes.specialistVerificationStatus:
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => const SpecialistVerificationScreen(),
+        );
+      case AppRoutes.specialistHelpSupport:
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => const SpecialistHelpSupportScreen(),
+        );
+      case AppRoutes.specialistSettings:
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => const SpecialistSettingsScreen(),
         );
 
       default:

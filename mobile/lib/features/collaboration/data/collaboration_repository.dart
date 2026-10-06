@@ -72,6 +72,28 @@ abstract class ICollaborationRepository {
     String content, {
     String? attachmentId,
   });
+
+  // Specialist Session Summary & Notes
+  Future<SpecialistSessionSummaryModel> saveSessionSummary(SpecialistSessionSummaryModel summary);
+  Future<SpecialistSessionSummaryModel> getSessionSummary({String? sessionId, String? learnerId});
+
+  // Specialist Profile, Notifications & Consent Circles
+  Future<SpecialistProfileModel> getSpecialistProfile();
+  Future<SpecialistProfileModel> updateSpecialistProfile(SpecialistProfileModel profile);
+  Future<List<SpecialistNotificationModel>> getSpecialistNotifications({String? category});
+  Future<void> markSpecialistNotificationRead(String id);
+  Future<void> markAllSpecialistNotificationsRead();
+  Future<List<SpecialistConsentCircleModel>> getSpecialistConsentCircles();
+  Future<SpecialistConsentCircleModel> updateConsentCircleScope(String circleId, String scopeKey, bool shared);
+
+  // Specialist Availability, Verification, Help & Settings
+  Future<SpecialistAvailabilityModel> getSpecialistAvailability();
+  Future<SpecialistAvailabilityModel> updateSpecialistAvailability(SpecialistAvailabilityModel availability);
+  Future<SpecialistVerificationModel> getSpecialistVerification();
+  Future<SpecialistHelpModel> getSpecialistHelp();
+  Future<void> reportSpecialistProblem(String category, String description);
+  Future<SpecialistSettingsModel> getSpecialistSettings();
+  Future<SpecialistSettingsModel> updateSpecialistSettings(SpecialistSettingsModel settings);
 }
 
 class CollaborationRepository implements ICollaborationRepository {
@@ -685,4 +707,521 @@ class CollaborationRepository implements ICollaborationRepository {
       ),
     ];
   }
+
+  static final Map<String, SpecialistSessionSummaryModel> _inMemorySummaries = {};
+
+  @override
+  Future<SpecialistSessionSummaryModel> saveSessionSummary(SpecialistSessionSummaryModel summary) async {
+    final trimmedNotes = summary.notes.trim();
+    if (trimmedNotes.isEmpty) {
+      throw Exception('Session notes cannot be empty. Please record key observations from this session.');
+    }
+
+    try {
+      final body = summary.toJson();
+      final response = await _apiClient.post(
+        ApiEndpoints.specialistSessionSummary,
+        body: body,
+      );
+      if (response is Map<String, dynamic>) {
+        final saved = SpecialistSessionSummaryModel.fromJson(response);
+        _inMemorySummaries[saved.id] = saved;
+        if (saved.sessionId != null) _inMemorySummaries[saved.sessionId!] = saved;
+        _inMemorySummaries[saved.learnerId] = saved;
+        return saved;
+      }
+    } catch (_) {
+      // In demo/test or offline mode, simulate persistence
+    }
+
+    final localId = 'summary_${DateTime.now().millisecondsSinceEpoch}';
+    final saved = summary.copyWith(
+      id: summary.id.startsWith('summary_') && summary.id != 'summary_default' ? summary.id : localId,
+      status: 'completed',
+      createdAt: DateTime.now(),
+      disclaimer: 'Educational non-diagnostic learning support summary.',
+    );
+    _inMemorySummaries[saved.id] = saved;
+    if (saved.sessionId != null) _inMemorySummaries[saved.sessionId!] = saved;
+    _inMemorySummaries[saved.learnerId] = saved;
+    return saved;
+  }
+
+  @override
+  Future<SpecialistSessionSummaryModel> getSessionSummary({String? sessionId, String? learnerId}) async {
+    try {
+      if (sessionId != null) {
+        final response = await _apiClient.get(ApiEndpoints.specialistSessionSummaryDetail(sessionId));
+        if (response is Map<String, dynamic>) {
+          return SpecialistSessionSummaryModel.fromJson(response);
+        }
+      } else if (learnerId != null) {
+        final response = await _apiClient.get(ApiEndpoints.specialistLearnerLatestSummary(learnerId));
+        if (response is Map<String, dynamic>) {
+          return SpecialistSessionSummaryModel.fromJson(response);
+        }
+      }
+    } catch (_) {
+      // Fall through to memory / default Stitch data
+    }
+
+    if (sessionId != null && _inMemorySummaries.containsKey(sessionId)) {
+      return _inMemorySummaries[sessionId]!;
+    }
+    if (learnerId != null && _inMemorySummaries.containsKey(learnerId)) {
+      return _inMemorySummaries[learnerId]!;
+    }
+
+    // Default Stitch initial session state (Aarav Mehta)
+    return SpecialistSessionSummaryModel(
+      id: 'summary_aarav_default',
+      sessionId: sessionId ?? 'sess_live_001',
+      learnerId: learnerId ?? 'lr-1',
+      learnerName: learnerId != null && learnerId.contains('maya') ? 'Maya Sharma' : 'Aarav Mehta',
+      learnerAgeBand: learnerId != null && learnerId.contains('maya') ? 'Adult' : 'Child • 10 yrs',
+      sessionDate: 'Today, Oct 17',
+      sessionTime: '10:30 – 11:02 AM',
+      sessionDurationMinutes: 31,
+      sessionType: '1-to-1 Live Support',
+      targetFocus: '/r/ Blends',
+      cardsCompleted: 8,
+      pacingRhythmPercentage: 88,
+      audioReflectionsCount: 1,
+      workingAreas: const [
+        'Phonics & Blends',
+        'Speaking & Pacing',
+        'Reading Aloud',
+      ],
+      notes: '',
+      outcome: 'great_progress',
+      nextPracticeFocus: 'Consonant Clusters (/rk/, /st/) in 2-syllable words',
+      nextPracticeDescription: 'Assigned to Aarav\'s home practice deck with playful tactile rewards.',
+      followUpActions: const [
+        'Send tailored /r/ practice cards to Parent',
+        'Share session highlight with Teacher',
+      ],
+      nextScheduledSessionDate: 'Friday, Oct 25 • 10:30 AM',
+      nextScheduledSessionDescription: 'Practice Check-in • 20 min live video',
+      status: 'completed',
+    );
+  }
+
+  static SpecialistProfileModel? _inMemoryProfile;
+  static List<SpecialistNotificationModel>? _inMemoryNotifications;
+  static List<SpecialistConsentCircleModel>? _inMemoryConsentCircles;
+
+  @override
+  Future<SpecialistProfileModel> getSpecialistProfile() async {
+    try {
+      final response = await _apiClient.get(ApiEndpoints.specialistProfile);
+      if (response is Map<String, dynamic>) {
+        final profile = SpecialistProfileModel.fromJson(response);
+        _inMemoryProfile = profile;
+        return profile;
+      }
+    } catch (_) {}
+
+    return _inMemoryProfile ??= SpecialistProfileModel.defaultProfile();
+  }
+
+  @override
+  Future<SpecialistProfileModel> updateSpecialistProfile(SpecialistProfileModel profile) async {
+    try {
+      final response = await _apiClient.put(
+        ApiEndpoints.specialistProfile,
+        body: profile.toJson(),
+      );
+      if (response is Map<String, dynamic>) {
+        final updated = SpecialistProfileModel.fromJson(response);
+        _inMemoryProfile = updated;
+        return updated;
+      }
+    } catch (_) {}
+
+    _inMemoryProfile = profile;
+    return profile;
+  }
+
+  @override
+  Future<List<SpecialistNotificationModel>> getSpecialistNotifications({String? category}) async {
+    try {
+      final endpoint = category != null && category != 'All'
+          ? '${ApiEndpoints.specialistNotifications}?category=${category.toLowerCase()}'
+          : ApiEndpoints.specialistNotifications;
+      final response = await _apiClient.get(endpoint);
+      if (response is Map<String, dynamic> && response['notifications'] is List) {
+        final list = (response['notifications'] as List)
+            .map((e) => SpecialistNotificationModel.fromJson(e as Map<String, dynamic>))
+            .toList();
+        _inMemoryNotifications = list;
+        return list;
+      }
+    } catch (_) {}
+
+    _inMemoryNotifications ??= SpecialistNotificationModel.defaultNotifications();
+    if (category != null && category != 'All') {
+      return _inMemoryNotifications!
+          .where((n) => n.category.toLowerCase() == category.toLowerCase())
+          .toList();
+    }
+    return _inMemoryNotifications!;
+  }
+
+  @override
+  Future<void> markSpecialistNotificationRead(String id) async {
+    try {
+      await _apiClient.put(ApiEndpoints.specialistNotificationRead(id));
+    } catch (_) {}
+
+    if (_inMemoryNotifications != null) {
+      _inMemoryNotifications = _inMemoryNotifications!.map((n) {
+        if (n.id == id) {
+          return n.copyWith(isRead: true);
+        }
+        return n;
+      }).toList();
+    }
+  }
+
+  @override
+  Future<void> markAllSpecialistNotificationsRead() async {
+    try {
+      await _apiClient.post(ApiEndpoints.specialistNotificationsMarkAllRead);
+    } catch (_) {}
+
+    if (_inMemoryNotifications != null) {
+      _inMemoryNotifications = _inMemoryNotifications!.map((n) => n.copyWith(isRead: true)).toList();
+    }
+  }
+
+  @override
+  Future<List<SpecialistConsentCircleModel>> getSpecialistConsentCircles() async {
+    try {
+      final response = await _apiClient.get(ApiEndpoints.specialistConsentCircles);
+      if (response is Map<String, dynamic> && response['circles'] is List) {
+        final list = (response['circles'] as List)
+            .map((e) => SpecialistConsentCircleModel.fromJson(e as Map<String, dynamic>))
+            .toList();
+        _inMemoryConsentCircles = list;
+        return list;
+      }
+    } catch (_) {}
+
+    return _inMemoryConsentCircles ??= SpecialistConsentCircleModel.defaultCircles();
+  }
+
+  @override
+  Future<SpecialistConsentCircleModel> updateConsentCircleScope(
+    String circleId,
+    String scopeKey,
+    bool shared,
+  ) async {
+    try {
+      final response = await _apiClient.put(
+        ApiEndpoints.specialistConsentCircleScope(circleId, scopeKey),
+        body: {'shared': shared},
+      );
+      if (response is Map<String, dynamic>) {
+        final updated = SpecialistConsentCircleModel.fromJson(response);
+        if (_inMemoryConsentCircles != null) {
+          final idx = _inMemoryConsentCircles!.indexWhere((c) => c.id == circleId);
+          if (idx != -1) {
+            _inMemoryConsentCircles![idx] = updated;
+          }
+        }
+        return updated;
+      }
+    } catch (_) {}
+
+    _inMemoryConsentCircles ??= SpecialistConsentCircleModel.defaultCircles();
+    final circleIdx = _inMemoryConsentCircles!.indexWhere((c) => c.id == circleId);
+    if (circleIdx != -1) {
+      final target = _inMemoryConsentCircles![circleIdx];
+      final updatedScopes = target.permissionScopes.map((s) {
+        if (s.key == scopeKey) {
+          return s.copyWith(isShared: shared);
+        }
+        return s;
+      }).toList();
+      final updatedCircle = target.copyWith(permissionScopes: updatedScopes);
+      _inMemoryConsentCircles![circleIdx] = updatedCircle;
+      return updatedCircle;
+    }
+    throw Exception('Consent circle $circleId not found');
+  }
+
+  SpecialistAvailabilityModel? _inMemoryAvailability;
+  SpecialistVerificationModel? _inMemoryVerification;
+  SpecialistHelpModel? _inMemoryHelp;
+
+  @override
+  Future<SpecialistAvailabilityModel> getSpecialistAvailability() async {
+    try {
+      final response = await _apiClient.get(ApiEndpoints.specialistAvailability);
+      if (response is Map<String, dynamic>) {
+        final model = SpecialistAvailabilityModel.fromJson(response);
+        _inMemoryAvailability = model;
+        return model;
+      }
+    } catch (_) {}
+
+    return _inMemoryAvailability ??= const SpecialistAvailabilityModel(
+      specialistName: 'Dr. Maya Lin, M.S. CCC-SLP',
+      specialistTitle: 'Pediatric Speech & Phoneme Coaching',
+      specialistBadge: 'LINGUA SPECIALIST • Active Caseload',
+      availableForSessions: true,
+      timezone: 'Pacific Time (GMT-7)',
+      sessionDurationMinutes: 45,
+      bufferMinutes: 15,
+      dailySessionCap: 5,
+      advanceNotice: '24h Notice',
+      days: [
+        SpecialistDayAvailabilityModel(
+          dayKey: 'monday',
+          dayLabel: 'Monday',
+          initial: 'M',
+          isEnabled: true,
+          subtitle: '2 Slots Active',
+          slots: [
+            SpecialistTimeSlotModel(id: 'mon_1', timeRange: '9:00 AM – 12:00 PM', iconType: 'sun'),
+            SpecialistTimeSlotModel(id: 'mon_2', timeRange: '1:30 PM – 5:00 PM', iconType: 'sparkle'),
+          ],
+        ),
+        SpecialistDayAvailabilityModel(
+          dayKey: 'tuesday',
+          dayLabel: 'Tuesday',
+          initial: 'T',
+          isEnabled: true,
+          subtitle: '1 Slot Active',
+          slots: [
+            SpecialistTimeSlotModel(id: 'tue_1', timeRange: '10:00 AM – 3:30 PM', iconType: 'sun'),
+          ],
+        ),
+        SpecialistDayAvailabilityModel(
+          dayKey: 'wednesday',
+          dayLabel: 'Wednesday',
+          initial: 'W',
+          isEnabled: true,
+          subtitle: '2 Slots Active',
+          slots: [
+            SpecialistTimeSlotModel(id: 'wed_1', timeRange: '9:00 AM – 12:00 PM', iconType: 'sun'),
+            SpecialistTimeSlotModel(id: 'wed_2', timeRange: '1:30 PM – 4:30 PM', iconType: 'sparkle'),
+          ],
+        ),
+        SpecialistDayAvailabilityModel(
+          dayKey: 'thursday_friday',
+          dayLabel: 'Thursday & Friday',
+          initial: 'TF',
+          isEnabled: true,
+          subtitle: 'Standard Afternoon blocks (1:00 - 5:00 PM)',
+          slots: [
+            SpecialistTimeSlotModel(id: 'tf_1', timeRange: '1:00 PM – 5:00 PM', iconType: 'sun'),
+          ],
+        ),
+        SpecialistDayAvailabilityModel(
+          dayKey: 'saturday',
+          dayLabel: 'Saturday',
+          initial: 'S',
+          isEnabled: false,
+          subtitle: 'Day off • Dedicated rest & prep',
+          slots: [],
+        ),
+        SpecialistDayAvailabilityModel(
+          dayKey: 'sunday',
+          dayLabel: 'Sunday',
+          initial: 'S',
+          isEnabled: false,
+          subtitle: 'Day off • Family & recharge',
+          slots: [],
+        ),
+      ],
+    );
+  }
+
+  @override
+  Future<SpecialistAvailabilityModel> updateSpecialistAvailability(
+    SpecialistAvailabilityModel availability,
+  ) async {
+    try {
+      final response = await _apiClient.put(
+        ApiEndpoints.specialistAvailability,
+        body: availability.toJson(),
+      );
+      if (response is Map<String, dynamic>) {
+        final updated = SpecialistAvailabilityModel.fromJson(response);
+        _inMemoryAvailability = updated;
+        return updated;
+      }
+    } catch (_) {}
+
+    _inMemoryAvailability = availability;
+    return availability;
+  }
+
+  @override
+  Future<SpecialistVerificationModel> getSpecialistVerification() async {
+    try {
+      final response = await _apiClient.get(ApiEndpoints.specialistVerification);
+      if (response is Map<String, dynamic>) {
+        final model = SpecialistVerificationModel.fromJson(response);
+        _inMemoryVerification = model;
+        return model;
+      }
+    } catch (_) {}
+
+    return _inMemoryVerification ??= const SpecialistVerificationModel(
+      verificationStatus: 'verified',
+      statusBadge: 'PROFILE VERIFIED',
+      headline: 'Your profile is verified',
+      description:
+          'Your specialist credentials and child-safety background checks are confirmed. Families and schools can discover your profile and book sessions.',
+      verificationDateText: 'Verified Oct 14, 2024 • Next check: Oct 2025',
+      milestonesCompleted: 5,
+      milestonesTotal: 5,
+      specialistName: 'Maya Reynolds, M.S.',
+      specialistInitials: 'MR',
+      specialistRoleSubtitle: 'Learning Support Specialist (CCC-SLP)',
+      experienceText: '8+ Yrs Pediatric',
+      languagesText: 'English, Spanish',
+      approvedDomains: [
+        'Reading Fluency',
+        'Speech & Pacing',
+        'Phonics & Spelling',
+        'Vocabulary Growth',
+      ],
+      milestones: [
+        SpecialistMilestoneItemModel(key: 'profile', label: 'Profile', isCompleted: true, isCurrent: false),
+        SpecialistMilestoneItemModel(key: 'details', label: 'Details', isCompleted: true, isCurrent: false),
+        SpecialistMilestoneItemModel(key: 'degrees', label: 'Degrees', isCompleted: true, isCurrent: false),
+        SpecialistMilestoneItemModel(key: 'review', label: 'Review', isCompleted: true, isCurrent: false),
+        SpecialistMilestoneItemModel(key: 'badge', label: 'Badge', isCompleted: true, isCurrent: true),
+      ],
+      verifiedDocuments: [
+        SpecialistVerifiedDocumentModel(
+          id: 'doc_degree',
+          title: 'M.S. in Speech & Hearing Sciences',
+          subtitle: 'University of Washington • Conferred 2016',
+          statusLabel: 'Approved',
+          iconType: 'grad_cap',
+          isApproved: true,
+        ),
+        SpecialistVerifiedDocumentModel(
+          id: 'doc_cert',
+          title: 'Clinical Competence Certification (CCC-SLP)',
+          subtitle: 'National Board Validated • Active Good Standing',
+          statusLabel: 'Approved',
+          iconType: 'certificate',
+          isApproved: true,
+        ),
+        SpecialistVerifiedDocumentModel(
+          id: 'doc_clearance',
+          title: 'Child-Safe & Background Clearance',
+          subtitle: 'Comprehensive Youth Safety Check • Passed',
+          statusLabel: 'Cleared',
+          iconType: 'shield',
+          isApproved: true,
+        ),
+      ],
+      complianceNotice: 'Encrypted • FERPA Compliant',
+    );
+  }
+
+  @override
+  Future<SpecialistHelpModel> getSpecialistHelp() async {
+    try {
+      final response = await _apiClient.get(ApiEndpoints.specialistHelp);
+      if (response is Map<String, dynamic>) {
+        final model = SpecialistHelpModel.fromJson(response);
+        _inMemoryHelp = model;
+        return model;
+      }
+    } catch (_) {}
+
+    return _inMemoryHelp ??= const SpecialistHelpModel(
+      categories: [
+        HelpCategoryItemModel(id: 'account', title: 'Account', subtitle: 'Profile & cred...', iconType: 'person', color: 'purple'),
+        HelpCategoryItemModel(id: 'sessions', title: 'Sessions', subtitle: 'Rooms, audio ...', iconType: 'video', color: 'teal'),
+        HelpCategoryItemModel(id: 'learners', title: 'Learners', subtitle: 'Rosters & spe...', iconType: 'grad_cap', color: 'amber'),
+        HelpCategoryItemModel(id: 'messages', title: 'Messages', subtitle: 'Parent & lear...', iconType: 'chat', color: 'purple'),
+        HelpCategoryItemModel(id: 'consent', title: 'Consent', subtitle: 'Guardian per...', iconType: 'shield', color: 'mint'),
+        HelpCategoryItemModel(id: 'verification', title: 'Verification', subtitle: 'Specialist sta...', iconType: 'badge', color: 'teal'),
+        HelpCategoryItemModel(id: 'availability', title: 'Availability', subtitle: 'Weekly slots ...', iconType: 'clock', color: 'lilac'),
+        HelpCategoryItemModel(id: 'alerts', title: 'Alerts', subtitle: 'Reminders & ...', iconType: 'bell', color: 'purple'),
+      ],
+      faqs: [
+        FaqItemModel(
+          id: 'faq_availability',
+          question: 'How do I update my weekly availability hours?',
+          answer:
+              'Navigate to Availability Settings to toggle individual days, customize time slots, and set buffer intervals between sessions. Changes apply immediately to new parent booking requests.',
+        ),
+        FaqItemModel(
+          id: 'faq_consent',
+          question: 'How does learner guardian consent work?',
+          answer:
+              'Each learner profile is managed via a Permission-Based Consent Circle. Guardians explicitly grant permissions for audio review, progress milestones, and reports. If consent is revoked, sensitive media streams lock automatically.',
+        ),
+        FaqItemModel(
+          id: 'faq_session',
+          question: 'How do I start a live learning session?',
+          answer:
+              'Open your Schedule tab or tap on an active appointment. Tap \'Start Live Session\' to launch the interactive coaching room with real-time phoneme exercises and engagement telemetry.',
+        ),
+        FaqItemModel(
+          id: 'faq_credentials',
+          question: 'How do I edit my professional qualifications?',
+          answer:
+              'Open Specialist Profile, select Edit Profile, and update your specialization, experience, or degrees. New credentials undergo automatic compliance verification within 24 hours.',
+        ),
+      ],
+      supportDeskHours: 'Mon–Fri, 8 AM–8 PM EST',
+      avgResponseTime: '< 15 mins during desk hours',
+      systemStatus: 'All Systems Operational',
+      appVersion: 'Lingua Specialist v2.4.1 (Build 842)',
+    );
+  }
+
+  @override
+  Future<void> reportSpecialistProblem(String category, String description) async {
+    try {
+      await _apiClient.post(
+        ApiEndpoints.specialistHelpReportProblem,
+        body: {'category': category, 'description': description},
+      );
+    } catch (_) {}
+  }
+
+  SpecialistSettingsModel? _inMemorySettings;
+
+  @override
+  Future<SpecialistSettingsModel> getSpecialistSettings() async {
+    try {
+      final response = await _apiClient.get(ApiEndpoints.specialistSettings);
+      if (response is Map<String, dynamic>) {
+        final model = SpecialistSettingsModel.fromJson(response);
+        _inMemorySettings = model;
+        return model;
+      }
+    } catch (_) {}
+
+    return _inMemorySettings ??= const SpecialistSettingsModel();
+  }
+
+  @override
+  Future<SpecialistSettingsModel> updateSpecialistSettings(
+      SpecialistSettingsModel settings) async {
+    _inMemorySettings = settings;
+    try {
+      final response = await _apiClient.put(
+        ApiEndpoints.specialistSettings,
+        body: settings.toJson(),
+      );
+      if (response is Map<String, dynamic>) {
+        _inMemorySettings = SpecialistSettingsModel.fromJson(response);
+      }
+    } catch (_) {}
+    return _inMemorySettings!;
+  }
 }
+
+

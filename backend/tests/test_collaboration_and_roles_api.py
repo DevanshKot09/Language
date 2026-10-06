@@ -299,3 +299,95 @@ def test_specialist_conversations_endpoint_and_consent_isolation(client: TestCli
     )
     assert empty_res.status_code == 422
 
+
+def test_specialist_availability_verification_and_help_endpoints(client: TestClient, db_session: Session):
+    """
+    Tests availability settings, verification status, and help & support endpoints for specialist.
+    """
+    spec_user = User(
+        email="dr.lin.spec@lingual.ai",
+        role="specialist",
+        firebase_uid="fb_dr_lin_spec",
+        status="active",
+    )
+    learner_user = User(
+        email="learner.test@lingual.ai",
+        role="learner",
+        firebase_uid="fb_learner_test",
+        status="active",
+    )
+    db_session.add_all([spec_user, learner_user])
+    db_session.commit()
+
+    headers_spec = auth_header(spec_user.firebase_uid)
+    headers_learner = auth_header(learner_user.firebase_uid)
+
+    # 1. Availability GET
+    res_avail = client.get("/api/v1/specialist/availability", headers=headers_spec)
+    assert res_avail.status_code == 200
+    avail_data = res_avail.json()
+    assert avail_data["available_for_sessions"] is True
+    assert avail_data["session_duration_minutes"] == 45
+    assert len(avail_data["days"]) >= 5
+
+    # Learner access is forbidden
+    assert client.get("/api/v1/specialist/availability", headers=headers_learner).status_code == 403
+
+    # 2. Availability PUT
+    res_update = client.put(
+        "/api/v1/specialist/availability",
+        headers=headers_spec,
+        json={"session_duration_minutes": 60, "buffer_minutes": 10},
+    )
+    assert res_update.status_code == 200
+    assert res_update.json()["session_duration_minutes"] == 60
+    assert res_update.json()["buffer_minutes"] == 10
+
+    # 3. Verification GET
+    res_verif = client.get("/api/v1/specialist/verification", headers=headers_spec)
+    assert res_verif.status_code == 200
+    verif_data = res_verif.json()
+    assert verif_data["verification_status"] == "verified"
+    assert verif_data["status_badge"] == "PROFILE VERIFIED"
+    assert len(verif_data["milestones"]) == 5
+    assert len(verif_data["verified_documents"]) == 3
+
+    # 4. Help & Support GET
+    res_help = client.get("/api/v1/specialist/help", headers=headers_spec)
+    assert res_help.status_code == 200
+    help_data = res_help.json()
+    assert len(help_data["categories"]) == 8
+    assert len(help_data["faqs"]) == 4
+    assert help_data["system_status"] == "All Systems Operational"
+
+    # 5. Report Problem POST
+    res_report = client.post(
+        "/api/v1/specialist/help/report-problem",
+        headers=headers_spec,
+        json={"category": "Audio / Video", "description": "Microphone latency in session room."},
+    )
+    assert res_report.status_code == 200
+    assert res_report.json()["status"] == "received"
+
+    # 6. Settings GET
+    res_settings = client.get("/api/v1/specialist/settings", headers=headers_spec)
+    assert res_settings.status_code == 200
+    settings_data = res_settings.json()
+    assert settings_data["session_reminders"] is True
+    assert settings_data["larger_text"] is False
+    assert settings_data["profile_visibility"] == "Public"
+
+    # Learner access to settings is forbidden
+    assert client.get("/api/v1/specialist/settings", headers=headers_learner).status_code == 403
+
+    # 7. Settings PUT
+    res_set_update = client.put(
+        "/api/v1/specialist/settings",
+        headers=headers_spec,
+        json={"larger_text": True, "weekly_progress_digests": True},
+    )
+    assert res_set_update.status_code == 200
+    assert res_set_update.json()["larger_text"] is True
+    assert res_set_update.json()["weekly_progress_digests"] is True
+
+

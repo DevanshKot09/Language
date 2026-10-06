@@ -1876,7 +1876,39 @@ class _SpecialistLiveSessionScreenState extends ConsumerState<SpecialistLiveSess
 
           ElevatedButton.icon(
             key: const Key('completed_add_note_button'),
-            onPressed: _openSessionNotesModal,
+            onPressed: () {
+              Navigator.pushNamed(
+                context,
+                AppRoutes.specialistSessionSummary,
+                arguments: SpecialistSessionSummaryModel(
+                  id: 'summary_$_learnerId',
+                  sessionId: 'sess_$_learnerId',
+                  learnerId: _learnerId,
+                  learnerName: _learnerName,
+                  learnerAgeBand: _learnerAgeBand,
+                  sessionDate: 'Today, Oct 17',
+                  sessionTime: '10:30 – 11:02 AM',
+                  sessionDurationMinutes: (_elapsedSeconds / 60).round().clamp(1, 120),
+                  sessionType: '1-to-1 Live Support',
+                  targetFocus: '$_targetPhoneme Blends',
+                  cardsCompleted: _currentCardIndex,
+                  pacingRhythmPercentage: 88,
+                  audioReflectionsCount: 1,
+                  workingAreas: const [
+                    'Phonics & Blends',
+                    'Speaking & Pacing',
+                    'Reading Aloud',
+                  ],
+                  outcome: 'great_progress',
+                  nextPracticeFocus: 'Consonant Clusters (/rk/, /st/) in 2-syllable words',
+                  followUpActions: const [
+                    'Send tailored /r/ practice cards to Parent',
+                    'Share session highlight with Teacher',
+                  ],
+                  nextScheduledSessionDate: 'Friday, Oct 25 • 10:30 AM',
+                ),
+              );
+            },
             icon: const Icon(Icons.note_add_outlined),
             label: const Text('Add Session Note'),
             style: ElevatedButton.styleFrom(

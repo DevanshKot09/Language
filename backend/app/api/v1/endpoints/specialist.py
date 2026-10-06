@@ -12,6 +12,21 @@ from app.schemas.collaboration import (
     SpecialistConversationResponse,
     ChatMessageResponse,
     ChatMessageCreateRequest,
+    SpecialistSessionSummaryRequest,
+    SpecialistSessionSummaryResponse,
+    SpecialistProfileResponse,
+    SpecialistProfileUpdateRequest,
+    SpecialistNotificationsResponse,
+    SpecialistNotificationItem,
+    SpecialistConsentCircle,
+    SpecialistConsentCirclesResponse,
+    SpecialistAvailabilityResponse,
+    SpecialistAvailabilityUpdateRequest,
+    SpecialistVerificationResponse,
+    SpecialistHelpResponse,
+    ReportProblemRequest,
+    SpecialistSettingsResponse,
+    SpecialistSettingsUpdateRequest,
 )
 from app.schemas.progress import ProgressDashboardResponse
 from app.schemas.goal import GoalCreateRequest, GoalResponse
@@ -288,4 +303,263 @@ async def send_conversation_message(
         content=request.content,
         attachment_id=request.attachment_id,
     )
+
+
+@router.post("/sessions/summary", response_model=SpecialistSessionSummaryResponse, status_code=status.HTTP_201_CREATED)
+async def save_session_summary(
+    request: SpecialistSessionSummaryRequest,
+    current_user: User = Depends(require_role(["specialist", "admin"])),
+    db: Session = Depends(get_db),
+):
+    """
+    Saves specialist observations, session outcomes, and recommended follow-up actions.
+    Persists data to backend Supabase-backed architecture and enforces non-diagnostic rules.
+    """
+    service = CollaborationService(db)
+    return service.save_session_summary(
+        specialist_user=current_user,
+        summary_data=request.model_dump(),
+    )
+
+
+@router.get("/sessions/{session_id}/summary", response_model=SpecialistSessionSummaryResponse)
+async def get_session_summary(
+    session_id: str,
+    current_user: User = Depends(require_role(["specialist", "admin"])),
+    db: Session = Depends(get_db),
+):
+    """
+    Retrieves saved session summary by session identifier.
+    """
+    service = CollaborationService(db)
+    return service.get_session_summary(
+        specialist_user=current_user,
+        session_id=session_id,
+    )
+
+
+@router.get("/learners/{learner_id}/latest-summary", response_model=SpecialistSessionSummaryResponse)
+async def get_learner_latest_session_summary(
+    learner_id: str,
+    current_user: User = Depends(require_role(["specialist", "admin"])),
+    db: Session = Depends(get_db),
+):
+    """
+    Retrieves the most recent session summary for a given learner.
+    """
+    service = CollaborationService(db)
+    return service.get_session_summary(
+        specialist_user=current_user,
+        learner_id=learner_id,
+    )
+
+
+# ---------------------------------------------------------------------------
+# Specialist Profile Endpoints
+# ---------------------------------------------------------------------------
+@router.get("/profile", response_model=SpecialistProfileResponse)
+async def get_specialist_profile(
+    current_user: User = Depends(require_role(["specialist", "admin"])),
+    db: Session = Depends(get_db),
+):
+    """
+    Returns verified specialist professional profile matching Stitch reference.
+    """
+    service = CollaborationService(db)
+    return service.get_specialist_profile(current_user)
+
+
+@router.put("/profile", response_model=SpecialistProfileResponse)
+async def update_specialist_profile(
+    request: SpecialistProfileUpdateRequest,
+    current_user: User = Depends(require_role(["specialist", "admin"])),
+    db: Session = Depends(get_db),
+):
+    """
+    Updates specialist professional profile.
+    """
+    service = CollaborationService(db)
+    return service.update_specialist_profile(current_user, request.model_dump(exclude_unset=True))
+
+
+# ---------------------------------------------------------------------------
+# Specialist Notifications Endpoints
+# ---------------------------------------------------------------------------
+@router.get("/notifications", response_model=SpecialistNotificationsResponse)
+async def get_specialist_notifications(
+    category: Optional[str] = None,
+    current_user: User = Depends(require_role(["specialist", "admin"])),
+    db: Session = Depends(get_db),
+):
+    """
+    Returns organized specialist notifications matching Stitch visual reference.
+    """
+    service = CollaborationService(db)
+    return service.get_specialist_notifications(current_user, category=category)
+
+
+@router.put("/notifications/{notification_id}/read")
+async def mark_specialist_notification_read(
+    notification_id: str,
+    current_user: User = Depends(require_role(["specialist", "admin"])),
+    db: Session = Depends(get_db),
+):
+    """
+    Marks a single notification as read.
+    """
+    service = CollaborationService(db)
+    return service.mark_notification_read(current_user, notification_id)
+
+
+@router.post("/notifications/mark-all-read")
+async def mark_all_specialist_notifications_read(
+    current_user: User = Depends(require_role(["specialist", "admin"])),
+    db: Session = Depends(get_db),
+):
+    """
+    Marks all notifications for specialist as read.
+    """
+    service = CollaborationService(db)
+    return service.mark_all_notifications_read(current_user)
+
+
+# ---------------------------------------------------------------------------
+# Specialist Consent & Sharing Endpoints
+# ---------------------------------------------------------------------------
+@router.get("/consent-circles", response_model=SpecialistConsentCirclesResponse)
+async def get_specialist_consent_circles(
+    current_user: User = Depends(require_role(["specialist", "admin"])),
+    db: Session = Depends(get_db),
+):
+    """
+    Returns permission-based consent circles matching Stitch visual reference.
+    """
+    service = CollaborationService(db)
+    return service.get_specialist_consent_circles(current_user)
+
+
+@router.put("/consent-circles/{circle_id}/scopes/{scope_key}")
+async def update_consent_circle_scope(
+    circle_id: str,
+    scope_key: str,
+    shared: bool = True,
+    current_user: User = Depends(require_role(["specialist", "admin"])),
+    db: Session = Depends(get_db),
+):
+    """
+    Toggles a permission scope inside a consent circle.
+    """
+    service = CollaborationService(db)
+    return service.update_consent_circle_scope(current_user, circle_id, scope_key, shared)
+
+
+# ---------------------------------------------------------------------------
+# Specialist Availability & Appointment Settings Endpoints
+# ---------------------------------------------------------------------------
+@router.get("/availability", response_model=SpecialistAvailabilityResponse)
+async def get_specialist_availability(
+    current_user: User = Depends(require_role(["specialist", "admin"])),
+    db: Session = Depends(get_db),
+):
+    """
+    Returns specialist availability, weekly schedule, and booking preferences.
+    """
+    service = CollaborationService(db)
+    return service.get_specialist_availability(current_user)
+
+
+@router.put("/availability", response_model=SpecialistAvailabilityResponse)
+async def update_specialist_availability(
+    payload: SpecialistAvailabilityUpdateRequest,
+    current_user: User = Depends(require_role(["specialist", "admin"])),
+    db: Session = Depends(get_db),
+):
+    """
+    Updates specialist availability and session preferences.
+    """
+    service = CollaborationService(db)
+    return service.update_specialist_availability(
+        current_user,
+        payload.model_dump(exclude_unset=True),
+    )
+
+
+# ---------------------------------------------------------------------------
+# Specialist Verification Status Endpoints
+# ---------------------------------------------------------------------------
+@router.get("/verification", response_model=SpecialistVerificationResponse)
+async def get_specialist_verification(
+    current_user: User = Depends(require_role(["specialist", "admin"])),
+    db: Session = Depends(get_db),
+):
+    """
+    Returns specialist verification status, review milestones, and certified credentials.
+    """
+    service = CollaborationService(db)
+    return service.get_specialist_verification(current_user)
+
+
+# ---------------------------------------------------------------------------
+# Specialist Help & Support Endpoints
+# ---------------------------------------------------------------------------
+@router.get("/help", response_model=SpecialistHelpResponse)
+async def get_specialist_help(
+    current_user: User = Depends(require_role(["specialist", "admin"])),
+    db: Session = Depends(get_db),
+):
+    """
+    Returns specialist help topics, curated FAQs, and support channels.
+    """
+    service = CollaborationService(db)
+    return service.get_specialist_help(current_user)
+
+
+@router.post("/help/report-problem")
+async def report_specialist_problem(
+    payload: ReportProblemRequest,
+    current_user: User = Depends(require_role(["specialist", "admin"])),
+    db: Session = Depends(get_db),
+):
+    """
+    Submits a specialist support report ticket.
+    """
+    service = CollaborationService(db)
+    return service.report_problem(
+        current_user,
+        category=payload.category,
+        description=payload.description,
+        device_info=payload.device_info,
+    )
+
+
+# ---------------------------------------------------------------------------
+# Specialist Settings Endpoints
+# ---------------------------------------------------------------------------
+@router.get("/settings", response_model=SpecialistSettingsResponse)
+async def get_specialist_settings(
+    current_user: User = Depends(require_role(["specialist", "admin"])),
+    db: Session = Depends(get_db),
+):
+    """
+    Returns specialist settings configuration matching the Stitch reference.
+    """
+    service = CollaborationService(db)
+    return service.get_specialist_settings(current_user)
+
+
+@router.put("/settings", response_model=SpecialistSettingsResponse)
+async def update_specialist_settings(
+    payload: SpecialistSettingsUpdateRequest,
+    current_user: User = Depends(require_role(["specialist", "admin"])),
+    db: Session = Depends(get_db),
+):
+    """
+    Updates specialist preferences in settings store.
+    """
+    service = CollaborationService(db)
+    updates = payload.model_dump(exclude_unset=True)
+    return service.update_specialist_settings(current_user, updates)
+
+
+
 

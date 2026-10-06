@@ -62,5 +62,30 @@ class ApiEndpoints {
   static const String specialistConversations = '/api/v1/specialist/conversations';
   static String specialistConversationMessages(String conversationId) =>
       '/api/v1/specialist/conversations/$conversationId/messages';
+  static const String specialistSessionSummary = '/api/v1/specialist/sessions/summary';
+  static String specialistSessionSummaryDetail(String sessionId) =>
+      '/api/v1/specialist/sessions/$sessionId/summary';
+  static String specialistLearnerLatestSummary(String learnerId) =>
+      '/api/v1/specialist/learners/$learnerId/latest-summary';
+
+  // Specialist Profile, Notifications & Consent Circles
+  static const String specialistProfile = '/api/v1/specialist/profile';
+  static const String specialistNotifications = '/api/v1/specialist/notifications';
+  static String specialistNotificationRead(String id) =>
+      '/api/v1/specialist/notifications/$id/read';
+  static const String specialistNotificationsMarkAllRead =
+      '/api/v1/specialist/notifications/mark-all-read';
+  static const String specialistConsentCircles =
+      '/api/v1/specialist/consent-circles';
+  static String specialistConsentCircleScope(String circleId, String scopeKey) =>
+      '/api/v1/specialist/consent-circles/$circleId/scopes/$scopeKey';
+
+  // Specialist Availability, Verification & Help
+  static const String specialistAvailability = '/api/v1/specialist/availability';
+  static const String specialistVerification = '/api/v1/specialist/verification';
+  static const String specialistHelp = '/api/v1/specialist/help';
+  static const String specialistHelpReportProblem =
+      '/api/v1/specialist/help/report-problem';
+  static const String specialistSettings = '/api/v1/specialist/settings';
 }
 

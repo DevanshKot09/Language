@@ -913,6 +913,16 @@ class _SpecialistDashboardScreenState extends ConsumerState<SpecialistDashboardS
               bgColor: const Color(0xFFEDE9FE),
               onTap: () => _showBookingModal(context),
             ),
+
+            // 3. Consent & Sharing
+            _buildToolItem(
+              label: 'Consent',
+              icon: Icons.verified_user_rounded,
+              iconColor: const Color(0xFF2563EB),
+              bgColor: const Color(0xFFDBEAFE),
+              badgeNumber: consentCount,
+              onTap: () => Navigator.pushNamed(context, AppRoutes.specialistConsentSharing),
+            ),
           ],
         ),
       ],
@@ -2566,22 +2576,42 @@ class _SpecialistDashboardScreenState extends ConsumerState<SpecialistDashboardS
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Specialist Notifications',
-                style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Specialist Notifications',
+                    style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(ctx);
+                      Navigator.pushNamed(context, AppRoutes.specialistNotifications);
+                    },
+                    child: const Text('View All', style: TextStyle(fontWeight: FontWeight.w700)),
+                  ),
+                ],
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 8),
               ListTile(
+                contentPadding: EdgeInsets.zero,
                 leading: const Icon(Icons.mark_email_unread_outlined, color: Color(0xFFEF4444)),
                 title: const Text('Consent request pending for Liam K.'),
                 subtitle: const Text('Guardian submitted audio permission request 2h ago'),
-                onTap: () => Navigator.pop(ctx),
+                onTap: () {
+                  Navigator.pop(ctx);
+                  Navigator.pushNamed(context, AppRoutes.specialistNotifications);
+                },
               ),
               ListTile(
+                contentPadding: EdgeInsets.zero,
                 leading: const Icon(Icons.check_circle_outline, color: Color(0xFF0D9488)),
                 title: const Text('Weekly summary delivered'),
                 subtitle: const Text('Aarav M. completed phoneme game session'),
-                onTap: () => Navigator.pop(ctx),
+                onTap: () {
+                  Navigator.pop(ctx);
+                  Navigator.pushNamed(context, AppRoutes.specialistNotifications);
+                },
               ),
             ],
           ),
@@ -2626,8 +2656,30 @@ class _SpecialistDashboardScreenState extends ConsumerState<SpecialistDashboardS
                   ),
                 ],
               ),
-              const Divider(height: 28),
+              const Divider(height: 24),
               ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: const Icon(Icons.badge_outlined, color: Color(0xFF5B5BD6)),
+                title: const Text('View Full Specialist Profile', style: TextStyle(fontWeight: FontWeight.w700)),
+                trailing: const Icon(Icons.chevron_right_rounded),
+                onTap: () {
+                  Navigator.pop(ctx);
+                  Navigator.pushNamed(context, AppRoutes.specialistProfile);
+                },
+              ),
+              ListTile(
+                key: const Key('dashboard_settings_tile'),
+                contentPadding: EdgeInsets.zero,
+                leading: const Icon(Icons.settings_outlined, color: Color(0xFF5B5BD6)),
+                title: const Text('Specialist Settings', style: TextStyle(fontWeight: FontWeight.w700)),
+                trailing: const Icon(Icons.chevron_right_rounded),
+                onTap: () {
+                  Navigator.pop(ctx);
+                  Navigator.pushNamed(context, AppRoutes.specialistSettings);
+                },
+              ),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
                 leading: const Icon(Icons.logout, color: LinguaTokens.danger600),
                 title: const Text('Sign Out', style: TextStyle(color: LinguaTokens.danger600, fontWeight: FontWeight.w600)),
                 onTap: () async {

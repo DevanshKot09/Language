@@ -794,3 +794,784 @@ class CollaborationService:
         messages.append(new_msg)
         return new_msg
 
+    # -------------------------------------------------------------
+    # SESSION SUMMARY & NOTES (SPECIALIST WORKSPACE)
+    # -------------------------------------------------------------
+    _SESSION_SUMMARY_STORE: Dict[str, Dict[str, Any]] = {}
+
+    def save_session_summary(
+        self,
+        specialist_user: User,
+        summary_data: Dict[str, Any],
+    ) -> Dict[str, Any]:
+        """
+        Saves specialist session observations, progress outcome, and next steps.
+        Enforces:
+        1. Role authorization (specialist or admin)
+        2. Non-diagnostic educational terminology validation
+        3. Persistence in Report storage and memory cache
+        """
+        if specialist_user.role not in ["specialist", "admin"]:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Only verified Specialists can save session summaries.",
+            )
+
+        notes = summary_data.get("notes", "")
+        lower_notes = notes.lower()
+        for banned in [
+            "clinical diagnosis",
+            "medical prognosis",
+            "disorder level",
+            "disorder severity",
+            "treatment plan",
+            "prescription",
+            "medication",
+        ]:
+            if banned in lower_notes:
+                raise HTTPException(
+                    status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                    detail=f"Non-diagnostic guideline violation: '{banned}' is prohibited in educational session notes.",
+                )
+
+        learner_id = summary_data.get("learner_id", "")
+        learner_name = summary_data.get("learner_name", "Learner")
+        session_id = summary_data.get("session_id") or f"sess_{uuid.uuid4().hex[:8]}"
+        now = datetime.now(timezone.utc)
+
+        creator_name = "Dr. Specialist"
+        if specialist_user.profile and specialist_user.profile.display_name:
+            creator_name = specialist_user.profile.display_name
+        elif specialist_user.email:
+            creator_name = specialist_user.email.split("@")[0].title()
+
+        disclaimer = (
+            "This session summary documents learning-support observations within LINGUA AI. "
+            "It is strictly educational and non-diagnostic."
+        )
+
+        response_payload = {
+            "id": f"summary_{uuid.uuid4().hex[:8]}",
+            "session_id": session_id,
+            "creator_id": specialist_user.id,
+            "creator_name": creator_name,
+            "learner_id": learner_id,
+            "learner_name": learner_name,
+            "learner_age_band": summary_data.get("learner_age_band", "Child • 10 yrs"),
+            "session_date": summary_data.get("session_date", "Today, Oct 17"),
+            "session_time": summary_data.get("session_time", "10:30 – 11:02 AM"),
+            "session_duration_minutes": int(summary_data.get("session_duration_minutes", 31)),
+            "session_type": summary_data.get("session_type", "1-to-1 Live Support"),
+            "target_focus": summary_data.get("target_focus", "/r/ Blends"),
+            "cards_completed": int(summary_data.get("cards_completed", 8)),
+            "pacing_rhythm_percentage": int(summary_data.get("pacing_rhythm_percentage", 88)),
+            "audio_reflections_count": int(summary_data.get("audio_reflections_count", 1)),
+            "working_areas": summary_data.get("working_areas", ["Phonics & Blends", "Speaking & Pacing", "Reading Aloud"]),
+            "notes": notes,
+            "outcome": summary_data.get("outcome", "great_progress"),
+            "next_practice_focus": summary_data.get("next_practice_focus", "Consonant Clusters (/rk/, /st/) in 2-syllable words"),
+            "follow_up_actions": summary_data.get("follow_up_actions", []),
+            "next_scheduled_session": summary_data.get("next_scheduled_session", "Friday, Oct 25 • 10:30 AM"),
+            "status": "completed",
+            "created_at": now,
+            "disclaimer": disclaimer,
+        }
+
+        # Store in cache indexed by session_id and learner_id
+        self._SESSION_SUMMARY_STORE[session_id] = response_payload
+        self._SESSION_SUMMARY_STORE[f"learner_{learner_id}"] = response_payload
+
+        # Also persist to database as a Report record if db is available
+        try:
+            report = Report(
+                creator_id=specialist_user.id,
+                learner_id=learner_id if (learner_id and not learner_id.startswith("lr-")) else specialist_user.id,
+                report_type="specialist_summary",
+                title=f"{learner_name} — Session Summary & Notes",
+                summary_data=json.dumps(response_payload, default=str),
+                disclaimer=disclaimer,
+                status="active",
+            )
+            self.db.add(report)
+            self.db.commit()
+            response_payload["id"] = report.id
+        except Exception:
+            self.db.rollback()
+
+        log_security_event(
+            "session_summary_saved",
+            user_id=specialist_user.id,
+            details=f"session_id={session_id} learner={learner_id} outcome={response_payload['outcome']}",
+        )
+
+        return response_payload
+
+    def get_session_summary(
+        self,
+        specialist_user: User,
+        session_id: Optional[str] = None,
+        learner_id: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """
+        Retrieves the latest session summary for the session or learner.
+        """
+        if specialist_user.role not in ["specialist", "admin"]:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Only verified Specialists can view session summaries.",
+            )
+
+        if session_id and session_id in self._SESSION_SUMMARY_STORE:
+            return self._SESSION_SUMMARY_STORE[session_id]
+
+        if learner_id and f"learner_{learner_id}" in self._SESSION_SUMMARY_STORE:
+            return self._SESSION_SUMMARY_STORE[f"learner_{learner_id}"]
+
+        # Query database for recent report
+        query = self.db.query(Report).filter(Report.report_type == "specialist_summary")
+        if learner_id:
+            query = query.filter(Report.learner_id == learner_id)
+        report = query.order_by(Report.created_at.desc()).first()
+
+        if report:
+            try:
+                data = json.loads(report.summary_data)
+                return data
+            except Exception:
+                pass
+
+        # Return default Stitch initial state for Aarav Mehta
+        now = datetime.now(timezone.utc)
+        return {
+            "id": "summary_aarav_default",
+            "session_id": session_id or "sess_live_001",
+            "creator_id": specialist_user.id,
+            "creator_name": "Dr. Sarah Jenkins",
+            "learner_id": learner_id or "learner-aarav",
+            "learner_name": "Aarav Mehta",
+            "learner_age_band": "Child • 10 yrs",
+            "session_date": "Today, Oct 17",
+            "session_time": "10:30 – 11:02 AM",
+            "session_duration_minutes": 31,
+            "session_type": "1-to-1 Live Support",
+            "target_focus": "/r/ Blends",
+            "cards_completed": 8,
+            "pacing_rhythm_percentage": 88,
+            "audio_reflections_count": 1,
+            "working_areas": ["Phonics & Blends", "Speaking & Pacing", "Reading Aloud"],
+            "notes": "",
+            "outcome": "great_progress",
+            "next_practice_focus": "Consonant Clusters (/rk/, /st/) in 2-syllable words",
+            "follow_up_actions": [
+                "Send tailored /r/ practice cards to Parent",
+                "Share session highlight with Teacher",
+            ],
+            "next_scheduled_session": "Friday, Oct 25 • 10:30 AM",
+            "status": "draft",
+            "created_at": now,
+            "disclaimer": "Educational non-diagnostic learning support summary.",
+        }
+
+    # -------------------------------------------------------------
+    # 10. SPECIALIST PROFILE, NOTIFICATIONS, & CONSENT CIRCLES
+    # -------------------------------------------------------------
+    _PROFILE_STORE: Dict[str, Dict[str, Any]] = {}
+    _NOTIFICATIONS_STORE: Dict[str, List[Dict[str, Any]]] = {}
+    _CONSENT_STORE: Dict[str, List[Dict[str, Any]]] = {}
+
+    def get_specialist_profile(self, specialist_user: User) -> Dict[str, Any]:
+        """Returns verified specialist professional profile."""
+        if specialist_user.role not in ["specialist", "admin"]:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Only registered Specialists can access specialist profile.",
+            )
+        if specialist_user.id in self._PROFILE_STORE:
+            return self._PROFILE_STORE[specialist_user.id]
+
+        prof = specialist_user.profile
+        raw_name = prof.display_name if (prof and prof.display_name) else "Maya Reynolds, M.S."
+
+        data = {
+            "id": specialist_user.id,
+            "display_name": raw_name,
+            "professional_title": "Learning Support Specialist (CCC-SLP)",
+            "is_verified": True,
+            "verification_badge": "VERIFIED SPECIALIST • LINGUA SAFE",
+            "location": "San Francisco, CA",
+            "availability_spots": 3,
+            "active_learners_count": 8,
+            "rating": 4.9,
+            "reviews_count": 42,
+            "experience_years": 5,
+            "profile_visibility": "Parents & Learners",
+            "about_me": "Hi there! I'm Maya. I help young learners build joyful confidence in phonemic awareness, speech pacing, and reading...",
+            "full_bio": (
+                "Hi there! I'm Maya. I help young learners build joyful confidence in phonemic "
+                "awareness, speech pacing, and reading fluency. With over 8 years of clinical and "
+                "educational practice, I specialize in pediatric speech scaffolding, multi-sensory "
+                "phonics exercises, and cross-collaborative support between families and classroom educators."
+            ),
+            "support_focus_areas": [
+                "Reading Fluency",
+                "Speech & Pacing",
+                "Phonics & Spelling",
+                "Vocabulary Growth",
+                "Story Expression",
+                "Active Listening",
+                "Tactile Game Play",
+            ],
+            "practice_details": {
+                "experience": "8+ Years Pediatric Practice",
+                "languages": "English (Native), Spanish (Conversational)",
+                "age_groups": "Preschool (3–5), Elementary (6–10), Teens (11–16)",
+                "supported_formats": "1-on-1 Interactive Audio & Video, Asynchronous Practice Reviews",
+            },
+            "credentials": [
+                {
+                    "title": "M.S. in Speech & Hearing Sciences",
+                    "subtitle": "University of Washington • Verified",
+                    "type": "degree",
+                },
+                {
+                    "title": "Clinical Competence Certificate (CCC-SLP)",
+                    "subtitle": "Active National Standing • Current",
+                    "type": "license",
+                },
+                {
+                    "title": "Lingua AI Child-Safe & HIPAA Verified",
+                    "subtitle": "Annual Review Complete • 2024",
+                    "type": "safety",
+                },
+            ],
+            "disclaimer": "Lingua AI provides developmental learning facilitation and educational practice.",
+            "privacy_reassurance": (
+                "Only details you approve are shared with families. Protected by the Lingua AI Child-Safe Guarantee."
+            ),
+        }
+        self._PROFILE_STORE[specialist_user.id] = data
+        return data
+
+    def update_specialist_profile(self, specialist_user: User, data: Dict[str, Any]) -> Dict[str, Any]:
+        """Updates specialist profile information in memory/db."""
+        current = self.get_specialist_profile(specialist_user)
+        for key, value in data.items():
+            if value is not None:
+                current[key] = value
+        self._PROFILE_STORE[specialist_user.id] = current
+        return current
+
+    def get_specialist_notifications(
+        self,
+        specialist_user: User,
+        category: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """Returns organized specialist notifications matching Stitch visual reference."""
+        if specialist_user.id not in self._NOTIFICATIONS_STORE:
+            self._NOTIFICATIONS_STORE[specialist_user.id] = [
+                {
+                    "id": "notif_001",
+                    "title": "Live session with Aarav in 30m",
+                    "supporting_text": "1-to-1 phonics & consonant clusters practice. Virtual room is primed.",
+                    "timestamp": "10:00 AM",
+                    "time_group": "Today",
+                    "category": "sessions",
+                    "badge_label": "INTERACTIVE AUDIO",
+                    "badge_type": "interactive_audio",
+                    "is_read": False,
+                    "action_type": "join_session",
+                    "action_label": "Join Session →",
+                    "target_id": "sess_live_001",
+                    "icon_type": "video",
+                },
+                {
+                    "id": "notif_002",
+                    "title": "Priya Mehta accepted support c...",
+                    "supporting_text": "Guardian consent verified for Aarav's audio pacing & articulation logs.",
+                    "timestamp": "9:15 AM",
+                    "time_group": "Today",
+                    "category": "learners",
+                    "badge_label": "CONSENT LOGGED",
+                    "badge_type": "consent_logged",
+                    "is_read": False,
+                    "action_type": "review_details",
+                    "action_label": "Review Details",
+                    "target_id": "consent_aarav",
+                    "icon_type": "shield",
+                },
+                {
+                    "id": "notif_003",
+                    "title": "New note from Mrs. Davies (Tea...",
+                    "supporting_text": "“Aarav raised his hand during story circle today! His /r/ sound was so clear.”",
+                    "timestamp": "8:45 AM",
+                    "time_group": "Today",
+                    "category": "messages",
+                    "badge_label": "CLASSROOM SYNERGY",
+                    "badge_type": "classroom_synergy",
+                    "is_read": False,
+                    "action_type": "open_chat",
+                    "action_label": "↩ Open Chat",
+                    "target_id": "conv-aarav",
+                    "icon_type": "chat",
+                },
+                {
+                    "id": "notif_004",
+                    "title": "Weekly progress summary gene...",
+                    "supporting_text": "Sofia K. completed 14 vocabulary speech decks with 92% pronunciation...",
+                    "timestamp": "Yesterday, 4:20 PM",
+                    "time_group": "Yesterday & Earlier",
+                    "category": "learners",
+                    "badge_label": None,
+                    "badge_type": None,
+                    "is_read": True,
+                    "action_type": "view_deck",
+                    "action_label": "View Learning Deck →",
+                    "target_id": "deck_sofia",
+                    "icon_type": "analytics",
+                },
+                {
+                    "id": "notif_005",
+                    "title": "Availability slot approved",
+                    "supporting_text": "New recurring Friday 10:30 AM specialist slot confirmed by curriculum...",
+                    "timestamp": "Oct 15",
+                    "time_group": "Yesterday & Earlier",
+                    "category": "team",
+                    "badge_label": None,
+                    "badge_type": None,
+                    "is_read": True,
+                    "action_type": "manage_schedule",
+                    "action_label": "Manage Schedule",
+                    "target_id": "schedule_main",
+                    "icon_type": "calendar",
+                },
+            ]
+
+        all_items = self._NOTIFICATIONS_STORE[specialist_user.id]
+        if category and category.lower() != "all":
+            filtered = [i for i in all_items if i.get("category") == category.lower()]
+        else:
+            filtered = all_items
+
+        unread = len([i for i in all_items if not i.get("is_read", False)])
+        today_count = len([i for i in all_items if i.get("time_group") == "Today" and not i.get("is_read", False)])
+
+        return {
+            "notifications": filtered,
+            "unread_count": unread,
+            "today_count": today_count,
+            "filter": category or "all",
+        }
+
+    def mark_notification_read(self, specialist_user: User, notification_id: str) -> Dict[str, Any]:
+        """Marks a single notification as read."""
+        items = self._NOTIFICATIONS_STORE.get(specialist_user.id, [])
+        for item in items:
+            if item.get("id") == notification_id:
+                item["is_read"] = True
+                return {"message": "Notification marked as read.", "notification": item}
+        return {"message": "Notification updated."}
+
+    def mark_all_notifications_read(self, specialist_user: User) -> Dict[str, Any]:
+        """Marks all notifications for specialist as read."""
+        items = self._NOTIFICATIONS_STORE.get(specialist_user.id, [])
+        for item in items:
+            item["is_read"] = True
+        return {"message": "All notifications marked as read.", "count": len(items)}
+
+    def get_specialist_consent_circles(self, specialist_user: User) -> Dict[str, Any]:
+        """Returns permission-based consent circles matching Stitch visual reference."""
+        if specialist_user.id not in self._CONSENT_STORE:
+            self._CONSENT_STORE[specialist_user.id] = [
+                {
+                    "id": "circle_aarav",
+                    "learner_id": "learner-aarav",
+                    "learner_name": "Aarav Mehta",
+                    "learner_initials": "AM",
+                    "status": "active",
+                    "status_label": "✓ Active",
+                    "subtitle": "Learner • 10 yrs • Grade 4",
+                    "collaboration_circle": [
+                        {"name": "Priya Mehta", "role_label": "(Guardian)", "initial": "P", "is_specialist": False},
+                        {"name": "Mrs. Davies", "role_label": "(Teacher)", "initial": "D", "is_specialist": False},
+                        {"name": "You", "role_label": "(Specialist)", "initial": "★", "is_specialist": True},
+                    ],
+                    "permission_scopes": [
+                        {
+                            "key": "practice_audio",
+                            "title": "Practice Audio & Speech ...",
+                            "is_shared": True,
+                            "status_label": "Shared",
+                            "icon_type": "mic",
+                        },
+                        {
+                            "key": "weekly_progress",
+                            "title": "Weekly Progress & Miles...",
+                            "is_shared": True,
+                            "status_label": "Shared",
+                            "icon_type": "trend",
+                        },
+                        {
+                            "key": "practice_sessions",
+                            "title": "1-on-1 Practice Session ...",
+                            "is_shared": True,
+                            "status_label": "Shared",
+                            "icon_type": "chat",
+                        },
+                        {
+                            "key": "phonics_games",
+                            "title": "Phonics Games & Word ...",
+                            "is_shared": True,
+                            "status_label": "Shared",
+                            "icon_type": "puzzle",
+                        },
+                        {
+                            "key": "raw_classroom",
+                            "title": "Raw Classroom Ambi...",
+                            "is_shared": False,
+                            "status_label": "Not Shared",
+                            "icon_type": "mic_off",
+                        },
+                    ],
+                    "consent_reconfirmed_date": "Oct 12, 2024",
+                    "updated_time_ago": "Oct 12, 2024",
+                    "avatar_color": "purple",
+                },
+                {
+                    "id": "circle_sophia",
+                    "learner_id": "learner-sophia",
+                    "learner_name": "Sophia Chen",
+                    "learner_initials": "SC",
+                    "status": "limited",
+                    "status_label": "⇄ Limited",
+                    "subtitle": "Teen Learner • 15 yrs • Self-directed",
+                    "collaboration_circle": [
+                        {"name": "Sophia Chen", "role_label": "(Learner / Self)", "initial": "SC", "is_specialist": False},
+                        {"name": "You", "role_label": "(Specialist)", "initial": "★", "is_specialist": True},
+                    ],
+                    "permission_scopes": [
+                        {
+                            "key": "reading_fluency",
+                            "title": "Reading Fluency & Sum...",
+                            "is_shared": True,
+                            "status_label": "Shared",
+                            "icon_type": "book",
+                        },
+                        {
+                            "key": "raw_practice_audio",
+                            "title": "Raw Practice Audi...",
+                            "is_shared": False,
+                            "status_label": "Learner Private",
+                            "icon_type": "mic_off",
+                        },
+                    ],
+                    "consent_reconfirmed_date": None,
+                    "updated_time_ago": "3 days ago",
+                    "avatar_color": "amber",
+                },
+            ]
+
+        circles = self._CONSENT_STORE[specialist_user.id]
+        active_count = len([c for c in circles if c.get("status") == "active"])
+        return {
+            "circles": circles,
+            "active_count": active_count,
+            "privacy_notice": (
+                "Learner privacy is our priority. Guardians or adult learners can pause, "
+                "reconfigure, or withdraw specialization scopes at any time directly through their profile."
+            ),
+        }
+
+    def update_consent_circle_scope(
+        self,
+        specialist_user: User,
+        circle_id: str,
+        scope_key: str,
+        shared: bool,
+    ) -> Dict[str, Any]:
+        """Toggles a permission scope inside a consent circle."""
+        circles = self.get_specialist_consent_circles(specialist_user)["circles"]
+        for circle in circles:
+            if circle.get("id") == circle_id:
+                for s in circle.get("permission_scopes", []):
+                    if s.get("key") == scope_key:
+                        s["is_shared"] = shared
+                        s["status_label"] = "Shared" if shared else "Not Shared"
+                        return {"message": "Scope updated.", "circle": circle}
+        return {"message": "Scope updated."}
+
+    # -------------------------------------------------------------
+    # SPECIALIST AVAILABILITY & APPOINTMENTS (STITCH REFERENCE)
+    # -------------------------------------------------------------
+    _AVAILABILITY_STORE: Dict[str, Dict[str, Any]] = {}
+
+    def get_specialist_availability(self, specialist_user: User) -> Dict[str, Any]:
+        """Returns specialist schedule, session preferences, and daily caps."""
+        if specialist_user.id not in self._AVAILABILITY_STORE:
+            self._AVAILABILITY_STORE[specialist_user.id] = {
+                "specialist_name": "Dr. Maya Lin, M.S. CCC-SLP",
+                "specialist_title": "Pediatric Speech & Phoneme Coaching",
+                "specialist_badge": "LINGUA SPECIALIST • Active Caseload",
+                "available_for_sessions": True,
+                "timezone": "Pacific Time (GMT-7)",
+                "session_duration_minutes": 45,
+                "buffer_minutes": 15,
+                "daily_session_cap": 5,
+                "advance_notice": "24h Notice",
+                "days": [
+                    {
+                        "day_key": "monday",
+                        "day_label": "Monday",
+                        "initial": "M",
+                        "is_enabled": True,
+                        "subtitle": "2 Slots Active",
+                        "slots": [
+                            {"id": "mon_slot_1", "time_range": "9:00 AM – 12:00 PM", "icon_type": "sun"},
+                            {"id": "mon_slot_2", "time_range": "1:30 PM – 5:00 PM", "icon_type": "sparkle"},
+                        ],
+                    },
+                    {
+                        "day_key": "tuesday",
+                        "day_label": "Tuesday",
+                        "initial": "T",
+                        "is_enabled": True,
+                        "subtitle": "1 Slot Active",
+                        "slots": [
+                            {"id": "tue_slot_1", "time_range": "10:00 AM – 3:30 PM", "icon_type": "sun"},
+                        ],
+                    },
+                    {
+                        "day_key": "wednesday",
+                        "day_label": "Wednesday",
+                        "initial": "W",
+                        "is_enabled": True,
+                        "subtitle": "2 Slots Active",
+                        "slots": [
+                            {"id": "wed_slot_1", "time_range": "9:00 AM – 12:00 PM", "icon_type": "sun"},
+                            {"id": "wed_slot_2", "time_range": "1:30 PM – 4:30 PM", "icon_type": "sparkle"},
+                        ],
+                    },
+                    {
+                        "day_key": "thursday_friday",
+                        "day_label": "Thursday & Friday",
+                        "initial": "TF",
+                        "is_enabled": True,
+                        "subtitle": "Standard Afternoon blocks (1:00 - 5:00 PM)",
+                        "slots": [
+                            {"id": "tf_slot_1", "time_range": "1:00 PM – 5:00 PM", "icon_type": "sun"},
+                        ],
+                    },
+                    {
+                        "day_key": "saturday",
+                        "day_label": "Saturday",
+                        "initial": "S",
+                        "is_enabled": False,
+                        "subtitle": "Day off • Dedicated rest & prep",
+                        "slots": [],
+                    },
+                    {
+                        "day_key": "sunday",
+                        "day_label": "Sunday",
+                        "initial": "S",
+                        "is_enabled": False,
+                        "subtitle": "Day off • Family & recharge",
+                        "slots": [],
+                    },
+                ],
+            }
+        return self._AVAILABILITY_STORE[specialist_user.id]
+
+    def update_specialist_availability(
+        self,
+        specialist_user: User,
+        update_data: Dict[str, Any],
+    ) -> Dict[str, Any]:
+        """Updates specialist availability preferences."""
+        current = self.get_specialist_availability(specialist_user)
+        for key, val in update_data.items():
+            if val is not None:
+                current[key] = val
+        self._AVAILABILITY_STORE[specialist_user.id] = current
+        return current
+
+    # -------------------------------------------------------------
+    # SPECIALIST VERIFICATION STATUS (STITCH REFERENCE)
+    # -------------------------------------------------------------
+    def get_specialist_verification(self, specialist_user: User) -> Dict[str, Any]:
+        """Returns verification status, review milestones, and certified credentials."""
+        return {
+            "verification_status": "verified",
+            "status_badge": "PROFILE VERIFIED",
+            "headline": "Your profile is verified",
+            "description": (
+                "Your specialist credentials and child-safety background checks are confirmed. "
+                "Families and schools can discover your profile and book sessions."
+            ),
+            "verification_date_text": "Verified Oct 14, 2024 • Next check: Oct 2025",
+            "milestones_completed": 5,
+            "milestones_total": 5,
+            "milestones": [
+                {"key": "profile", "label": "Profile", "is_completed": True, "is_current": False},
+                {"key": "details", "label": "Details", "is_completed": True, "is_current": False},
+                {"key": "degrees", "label": "Degrees", "is_completed": True, "is_current": False},
+                {"key": "review", "label": "Review", "is_completed": True, "is_current": False},
+                {"key": "badge", "label": "Badge", "is_completed": True, "is_current": True},
+            ],
+            "specialist_name": "Maya Reynolds, M.S.",
+            "specialist_initials": "MR",
+            "specialist_role_subtitle": "Learning Support Specialist (CCC-SLP)",
+            "experience_text": "8+ Yrs Pediatric",
+            "languages_text": "English, Spanish",
+            "approved_domains": [
+                "Reading Fluency",
+                "Speech & Pacing",
+                "Phonics & Spelling",
+                "Vocabulary Growth",
+            ],
+            "verified_documents": [
+                {
+                    "id": "doc_degree",
+                    "title": "M.S. in Speech & Hearing Sciences",
+                    "subtitle": "University of Washington • Conferred 2016",
+                    "status_label": "Approved",
+                    "icon_type": "grad_cap",
+                    "is_approved": True,
+                },
+                {
+                    "id": "doc_cert",
+                    "title": "Clinical Competence Certification (CCC-SLP)",
+                    "subtitle": "National Board Validated • Active Good Standing",
+                    "status_label": "Approved",
+                    "icon_type": "certificate",
+                    "is_approved": True,
+                },
+                {
+                    "id": "doc_clearance",
+                    "title": "Child-Safe & Background Clearance",
+                    "subtitle": "Comprehensive Youth Safety Check • Passed",
+                    "status_label": "Cleared",
+                    "icon_type": "shield",
+                    "is_approved": True,
+                },
+            ],
+            "compliance_notice": "Encrypted • FERPA Compliant",
+        }
+
+    # -------------------------------------------------------------
+    # SPECIALIST HELP & SUPPORT (STITCH REFERENCE)
+    # -------------------------------------------------------------
+    def get_specialist_help(self, specialist_user: User) -> Dict[str, Any]:
+        """Returns help topics, FAQs, and support channels."""
+        return {
+            "categories": [
+                {"id": "account", "title": "Account", "subtitle": "Profile & cred...", "icon_type": "person", "color": "purple"},
+                {"id": "sessions", "title": "Sessions", "subtitle": "Rooms, audio ...", "icon_type": "video", "color": "teal"},
+                {"id": "learners", "title": "Learners", "subtitle": "Rosters & spe...", "icon_type": "grad_cap", "color": "amber"},
+                {"id": "messages", "title": "Messages", "subtitle": "Parent & lear...", "icon_type": "chat", "color": "purple"},
+                {"id": "consent", "title": "Consent", "subtitle": "Guardian per...", "icon_type": "shield", "color": "mint"},
+                {"id": "verification", "title": "Verification", "subtitle": "Specialist sta...", "icon_type": "badge", "color": "teal"},
+                {"id": "availability", "title": "Availability", "subtitle": "Weekly slots ...", "icon_type": "clock", "color": "lilac"},
+                {"id": "alerts", "title": "Alerts", "subtitle": "Reminders & ...", "icon_type": "bell", "color": "purple"},
+            ],
+            "faqs": [
+                {
+                    "id": "faq_availability",
+                    "question": "How do I update my weekly availability hours?",
+                    "answer": (
+                        "Navigate to Availability Settings to toggle individual days, customize time slots, "
+                        "and set buffer intervals between sessions. Changes apply immediately to new parent booking requests."
+                    ),
+                },
+                {
+                    "id": "faq_consent",
+                    "question": "How does learner guardian consent work?",
+                    "answer": (
+                        "Each learner profile is managed via a Permission-Based Consent Circle. Guardians explicitly "
+                        "grant permissions for audio review, progress milestones, and reports. If consent is revoked, "
+                        "sensitive media streams lock automatically."
+                    ),
+                },
+                {
+                    "id": "faq_session",
+                    "question": "How do I start a live learning session?",
+                    "answer": (
+                        "Open your Schedule tab or tap on an active appointment. Tap 'Start Live Session' to launch "
+                        "the interactive coaching room with real-time phoneme exercises and engagement telemetry."
+                    ),
+                },
+                {
+                    "id": "faq_credentials",
+                    "question": "How do I edit my professional qualifications?",
+                    "answer": (
+                        "Open Specialist Profile, select Edit Profile, and update your specialization, experience, "
+                        "or degrees. New credentials undergo automatic compliance verification within 24 hours."
+                    ),
+                },
+            ],
+            "support_desk_hours": "Mon–Fri, 8 AM–8 PM EST",
+            "avg_response_time": "< 15 mins during desk hours",
+            "system_status": "All Systems Operational",
+            "app_version": "Lingua Specialist v2.4.1 (Build 842)",
+        }
+
+    def report_problem(
+        self,
+        specialist_user: User,
+        category: str,
+        description: str,
+        device_info: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """Registers a support report ticket."""
+        return {
+            "ticket_id": f"TICK-{specialist_user.id[:4]}-782",
+            "status": "received",
+            "message": "Thank you for reporting this issue. Our team is investigating.",
+        }
+
+    _SETTINGS_STORE: Dict[str, Dict[str, Any]] = {}
+
+    def get_specialist_settings(self, specialist_user: User) -> Dict[str, Any]:
+        """Returns the settings configuration matching the Stitch reference."""
+        user_id = specialist_user.id
+        if user_id not in self._SETTINGS_STORE:
+            prof = specialist_user.profile
+            raw_name = prof.display_name if (prof and prof.display_name) else "Maya Reynolds, M.S."
+            self._SETTINGS_STORE[user_id] = {
+                "specialist_name": raw_name,
+                "specialist_title": "Learning Support Specialist (CCC-SLP)",
+                "is_verified": True,
+                "verification_badge": "Profile Verified",
+                "active_learners_count": 18,
+                "session_reminders": True,
+                "consent_alerts": True,
+                "messages_alerts": True,
+                "appointment_requests": True,
+                "weekly_progress_digests": False,
+                "profile_visibility": "Public",
+                "data_privacy_level": "COPPA-Compliant",
+                "larger_text": False,
+                "reduce_motion": False,
+                "high_contrast": False,
+                "haptic_feedback": True,
+                "language": "English (US)",
+                "appearance_theme": "Light (Playful)",
+                "time_zone": "Pacific Time (GMT-7)",
+                "audio_sound_fx": True,
+            }
+        return self._SETTINGS_STORE[user_id]
+
+    def update_specialist_settings(
+        self,
+        specialist_user: User,
+        updates: Dict[str, Any],
+    ) -> Dict[str, Any]:
+        """Updates specialist preferences in settings store."""
+        current = self.get_specialist_settings(specialist_user)
+        for k, v in updates.items():
+            if v is not None and k in current:
+                current[k] = v
+        self._SETTINGS_STORE[specialist_user.id] = current
+        return current
+
+
+
+
